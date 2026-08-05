@@ -142,3 +142,8 @@ body {
   90% { opacity: 1; }
   100% { top: 100%; opacity: 0; }
 }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}

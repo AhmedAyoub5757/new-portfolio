@@ -1,263 +1,166 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 
-interface Project {
+interface ProjectImage {
+  id: string;
   name: string;
   url: string;
-  tagline: string;
-  scope: string;
-  tech: string[];
+  imageSrc: string;
 }
 
-interface SectorVault {
-  id: string;
-  sectorNum: string;
-  category: string;
-  tagline: string;
-  accentGlow: string;
-  projects: Project[];
-}
-
-const sectors: SectorVault[] = [
+const projects: ProjectImage[] = [
   {
-    id: "insurtech",
-    sectorNum: "01",
-    category: "HEALTHCARE & INSURTECH",
-    tagline: "High-trust lead conversion engines & HIPAA-conscious client onboarding",
-    accentGlow: "group-hover:border-cyan-500/50 bg-cyan-950/20",
-    projects: [
-      {
-        name: "The Umbrella Insurance",
-        url: "theumbrellainsurance.net",
-        tagline: "Insurance Lead Funnel",
-        scope: "Engineered rapid policy acquisition forms & responsive layout",
-        tech: ["React", "Tailwind CSS", "REST APIs"],
-      },
-      {
-        name: "SoulDNA",
-        url: "souldna.co",
-        tagline: "Therapy Booking Engine",
-        scope: "Built client acquisition system for direct therapy session booking",
-        tech: ["Next.js", "Framer Motion", "Tailwind CSS"],
-      },
-    ],
+    id: "redbox",
+    name: "Redbox Technologies",
+    url: "https://redboxtechnologies.co",
+    imageSrc: "/redbox.png",
   },
   {
-    id: "ecommerce",
-    sectorNum: "02",
-    category: "NICHE E-COMMERCE & RETAIL",
-    tagline: "Custom catalog architectures, specialized checkout, & author distribution",
-    accentGlow: "group-hover:border-amber-500/50 bg-amber-950/20",
-    projects: [
-      {
-        name: "Head Over Wheels",
-        url: "headoverwheels.co",
-        tagline: "Medical Equipment Storefront",
-        scope: "E-Commerce catalog for wheelchair parts & accessibility gear",
-        tech: ["Core PHP", "MySQL", "Tailwind CSS"],
-      },
-      {
-        name: "Master of Flavor",
-        url: "masterofflavor.com",
-        tagline: "Barbecue Retail Hub",
-        scope: "Custom showcase & direct storefront for premium barbecue products",
-        tech: ["WordPress Core", "PHP", "CSS3"],
-      },
-      {
-        name: "Burned Out",
-        url: "burnedout.info",
-        tagline: "Digital Book Platform",
-        scope: "Direct author-to-consumer publishing marketplace",
-        tech: ["React", "REST APIs", "Tailwind CSS"],
-      },
-    ],
+    id: "burnedout",
+    name: "Burned Out",
+    url: "https://burnedout.info",
+    imageSrc: "/burnedout.png",
   },
   {
-    id: "corporate",
-    sectorNum: "03",
-    category: "CORPORATE & TECH AGENCIES",
-    tagline: "High-end corporate presence & agency service showcases",
-    accentGlow: "group-hover:border-purple-500/50 bg-purple-950/20",
-    projects: [
-      {
-        name: "Redbox Technologies",
-        url: "redboxtechnologies.co",
-        tagline: "Software Agency Hub",
-        scope: "Enterprise presence showcasing software engineering solutions",
-        tech: ["Next.js", "TypeScript", "Tailwind CSS"],
-      },
-    ],
+    id: "headoverwheels",
+    name: "Head Over Wheels",
+    url: "https://headoverwheels.co",
+    imageSrc: "/how.png",
   },
   {
-    id: "legal",
-    sectorNum: "04",
-    category: "IP, LEGAL & CONVERSION FUNNELS",
-    tagline: "Sub-second landing architectures engineered for trademark acquisition",
-    accentGlow: "group-hover:border-emerald-500/50 bg-emerald-950/20",
-    projects: [
-      {
-        name: "Trademark Fortify Platform",
-        url: "trademarkfortify.com / lp",
-        tagline: "IP Legal Landing Funnel",
-        scope: "High-conversion landing page engine for US trademark filings",
-        tech: ["HTML5", "Tailwind CSS", "JavaScript"],
-      },
-      {
-        name: "US Trademark Support",
-        url: "ustrademarksupport.com",
-        tagline: "Legal Service Intake Portal",
-        scope: "Client support intake hub for trademark registration cases",
-        tech: ["Core PHP", "MySQL", "REST APIs"],
-      },
-      {
-        name: "Launch Phase",
-        url: "launchphase.io",
-        tagline: "Startup Launch Funnel",
-        scope: "Performance-tuned launch funnel for early-stage ventures",
-        tech: ["React", "Framer Motion", "Tailwind CSS"],
-      },
-    ],
+    id: "launchphase",
+    name: "Launch Phase",
+    url: "https://launchphase.io",
+    imageSrc: "/launchphase.png",
+  },
+  {
+    id: "mof",
+    name: "Master of Flavor",
+    url: "https://masterofflavor.com",
+    imageSrc: "/mof.png",
+  },
+  {
+    id: "souldna",
+    name: "SoulDNA",
+    url: "https://souldna.co",
+    imageSrc: "/souldna.png",
+  },
+  {
+    id: "tui",
+    name: "The Umbrella Insurance",
+    url: "https://theumbrellainsurance.net",
+    imageSrc: "/tui.png",
   },
 ];
 
-export default function IndustryVault() {
-  const [expandedId, setExpandedId] = useState<string | null>("insurtech");
+function ImageCard({
+  project,
+  index,
+  total,
+  progress,
+}: {
+  project: ProjectImage;
+  index: number;
+  total: number;
+  progress: MotionValue<number>;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const startRange = index / total;
+  const endRange = (index + 1) / total;
+
+  // Progressive scaling down for stacked cards underneath
+  const targetScale = 1 - (total - index) * 0.035;
+  const scale = useTransform(progress, [startRange, 1], [1, targetScale]);
+
+  // Smooth brightness dimming for lower cards as new cards stack on top
+  const brightness = useTransform(progress, [endRange, 1], [1, 0.4]);
+
+  return (
+    <div className="sticky top-0 h-screen flex items-center justify-center">
+      <motion.div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => window.open(project.url, "_blank", "noopener,noreferrer")}
+        style={{
+          scale,
+          filter: `brightness(${brightness.get()})`,
+          top: `calc(16% + ${index * 16}px)`,
+        }}
+        className="relative w-full max-w-5xl h-[68vh] rounded-2xl sm:rounded-3xl border border-white/20 overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.9)] cursor-pointer group bg-neutral-950 transition-all duration-300 ease-out z-10"
+      >
+        <img
+          src={project.imageSrc}
+          alt={project.name}
+          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
+        />
+
+        {/* Floating Hover Pill */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{
+              opacity: isHovered ? 1 : 0,
+              scale: isHovered ? 1 : 0.8,
+            }}
+            transition={{ duration: 0.2 }}
+            className="px-6 py-3 rounded-full bg-white text-black font-mono text-xs font-bold uppercase tracking-wider shadow-2xl flex items-center gap-2 border border-white"
+          >
+            <span>Visit Site</span>
+            <span className="text-sm">↗</span>
+          </motion.div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+export default function StackedImageGallery() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
 
   return (
     <section
+      ref={containerRef}
       id="experience"
-      className="relative bg-background py-32 px-4 sm:px-12 overflow-hidden min-h-screen flex flex-col justify-center select-none"
+      className="relative bg-background pb-16 px-4 sm:px-8 select-none"
     >
-      <div className="max-w-7xl mx-auto w-full relative z-10">
-        
-        {/* Kinetic Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-16 pb-6 border-b border-white/10 gap-4">
+      {/* Sticky Section Header */}
+      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md pt-6 pb-4">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-white/10 pb-4">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
-              <span className="text-xs uppercase tracking-[0.3em] text-muted font-mono">
-                INDUSTRY VAULT // 05
+            <div className="flex items-center gap-2.5 mb-1">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+              <span className="font-mono text-xs uppercase tracking-widest text-accent">
+                05 // PORTFOLIO SHOWCASE
               </span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-light text-text tracking-tight">
-              Production Footprint
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-text">
+              SELECTED WORKS
             </h2>
           </div>
-
-          <span className="font-mono text-xs text-muted">
-            [ HOVER OR TAP TO EXPAND SECTOR ]
+          <span className="font-mono text-xs text-muted tracking-wider">
+            [ SCROLL TO STACK ]
           </span>
         </div>
+      </div>
 
-        {/* FULL-WIDTH ACCORDION STACK */}
-        <div className="flex flex-col gap-4">
-          {sectors.map((sector) => {
-            const isExpanded = expandedId === sector.id;
-
-            return (
-              <motion.div
-                key={sector.id}
-                onClick={() => setExpandedId(isExpanded ? null : sector.id)}
-                layout
-                className={`group rounded-2xl border transition-all duration-500 overflow-hidden cursor-pointer ${
-                  isExpanded
-                    ? "border-accent bg-white/[0.03] shadow-[0_10px_40px_rgba(0,0,0,0.8)]"
-                    : "border-white/10 bg-white/[0.005] hover:border-white/30 hover:bg-white/[0.015]"
-                }`}
-              >
-                {/* ALWAYS-VISIBLE SECTOR HEADER BAND */}
-                <div className="p-6 sm:p-8 flex items-center justify-between gap-6 relative">
-                  
-                  {/* Left Metadata */}
-                  <div className="flex items-center gap-6 sm:gap-10">
-                    <span className="font-mono text-2xl sm:text-4xl text-muted/40 font-light group-hover:text-accent transition-colors">
-                      {sector.sectorNum}
-                    </span>
-                    <div>
-                      <h3 className="text-lg sm:text-2xl font-medium text-text group-hover:translate-x-1 transition-transform duration-300">
-                        {sector.category}
-                      </h3>
-                      <p className="text-xs font-mono text-muted hidden sm:block mt-1">
-                        {sector.tagline}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Right Status Pill */}
-                  <div className="flex items-center gap-4">
-                    <span className="font-mono text-xs text-muted hidden md:inline-block">
-                      {sector.projects.length} {sector.projects.length === 1 ? "DEPLOYMENT" : "DEPLOYMENTS"}
-                    </span>
-                    <span
-                      className={`w-8 h-8 rounded-full border border-white/10 flex items-center justify-center font-mono text-sm transition-transform duration-500 ${
-                        isExpanded ? "rotate-45 border-accent text-accent" : "text-muted"
-                      }`}
-                    >
-                      +
-                    </span>
-                  </div>
-                </div>
-
-                {/* EXPANDABLE HORIZONTAL FILMSTRIP OF PROJECTS */}
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                      className="border-t border-white/10 bg-black/40"
-                    >
-                      {/* Horizontal Scrolling Track for Mobile / Grid for Desktop */}
-                      <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {sector.projects.map((proj, idx) => (
-                          <div
-                            key={idx}
-                            className="p-6 rounded-xl border border-white/10 bg-white/[0.02] hover:border-white/20 transition-all flex flex-col justify-between gap-6 group/card"
-                          >
-                            <div>
-                              <div className="flex items-start justify-between gap-2 mb-3">
-                                <h4 className="text-lg font-medium text-text group-hover/card:text-accent transition-colors">
-                                  {proj.name}
-                                </h4>
-                                <span className="font-mono text-[11px] text-accent bg-accent/10 px-2.5 py-1 rounded border border-accent/20 shrink-0">
-                                  {proj.url}
-                                </span>
-                              </div>
-
-                              <p className="text-xs font-mono text-muted uppercase tracking-wider mb-3">
-                                // {proj.tagline}
-                              </p>
-
-                              <p className="text-xs text-muted leading-relaxed">
-                                {proj.scope}
-                              </p>
-                            </div>
-
-                            {/* Tech Badges */}
-                            <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
-                              {proj.tech.map((t, i) => (
-                                <span
-                                  key={i}
-                                  className="px-2 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[10px] text-muted"
-                                >
-                                  {t}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            );
-          })}
-        </div>
-
+      {/* Stacked Cards Track */}
+      <div className="relative">
+        {projects.map((project, idx) => (
+          <ImageCard
+            key={project.id}
+            project={project}
+            index={idx}
+            total={projects.length}
+            progress={scrollYProgress}
+          />
+        ))}
       </div>
     </section>
   );
