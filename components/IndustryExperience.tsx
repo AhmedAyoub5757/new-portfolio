@@ -116,6 +116,7 @@ function ImageCard({
     </div>
   );
 }
+import SectionHeader from "./SectionHeader";
 
 export default function StackedImageGallery() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -127,22 +128,14 @@ export default function StackedImageGallery() {
   return (
     <section
       ref={containerRef}
-      id="experience"
+      id="work"
       className="relative bg-background pb-16 px-4 sm:px-8 select-none"
     >
       {/* Sticky Section Header */}
       <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md pt-6 pb-4">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-white/10 pb-4">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-white/10 pb-4">
           <div>
-            <div className="flex items-center gap-2.5 mb-1">
-              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-              <span className="font-mono text-xs uppercase tracking-widest text-accent">
-                05 // PORTFOLIO SHOWCASE
-              </span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-text">
-              SELECTED WORKS
-            </h2>
+            <SectionHeader num="05" tag="Portfolio Showcase" title="Selected Works" />
           </div>
           <span className="font-mono text-xs text-muted tracking-wider">
             [ SCROLL TO STACK ]

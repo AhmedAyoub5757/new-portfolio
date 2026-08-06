@@ -39,7 +39,7 @@ export default function CTA() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/10 blur-[140px] rounded-full pointer-events-none" />
 
       <div
-        className="relative max-w-3xl mx-auto text-center"
+        className="relative max-w-6xl mx-auto text-center"
         style={{
           opacity: inView ? 1 : 0,
           transform: inView ? "translateY(0)" : "translateY(16px)",

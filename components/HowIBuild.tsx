@@ -1,12 +1,8 @@
 "use client";
 
-import { useRef } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useSpring as useFramerSpring,
-} from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import SectionHeader from "./SectionHeader";
 
 interface Slide {
   id: string;
@@ -58,74 +54,61 @@ const slides: Slide[] = [
 
 export default function HowIBuildFilmstrip() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [maxTranslate, setMaxTranslate] = useState(0);
 
-  // Tracks vertical scroll progress across a 400vh tall container runway
+  useEffect(() => {
+    const updateTranslate = () => {
+      if (!trackRef.current) return;
+      const scrollDistance = trackRef.current.scrollWidth - window.innerWidth;
+      setMaxTranslate(Math.max(scrollDistance, 0));
+    };
+
+    updateTranslate();
+
+    const resizeObserver = new ResizeObserver(() => updateTranslate());
+    if (trackRef.current) resizeObserver.observe(trackRef.current);
+
+    window.addEventListener("resize", updateTranslate);
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateTranslate);
+    };
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
 
-  // Smooth out vertical scroll input into horizontal sliding translation
-  const smoothProgress = useFramerSpring(scrollYProgress, {
-    stiffness: 90,
-    damping: 20,
-    restDelta: 0.001,
-  });
-
-  // Maps vertical scroll (0 to 1) to horizontal movement (-0% to -75%)
-  const x = useTransform(smoothProgress, [0, 1], ["0%", "-75%"]);
-  const progressWidth = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
+  const x = useTransform(scrollYProgress, [0, 1], [0, -maxTranslate]);
 
   return (
-    // Runway section: 400vh gives ample room to scroll horizontally without feeling rushed
-    <section ref={containerRef} className="relative bg-background h-[400vh]">
-      
-      {/* Viewport Frame Pinned Sticky */}
-      <div className="sticky top-0 h-screen flex flex-col justify-between py-12 px-6 overflow-hidden">
-        
-        {/* Background Ambient Glow */}
+    <section ref={containerRef} className="relative bg-background h-[450vh]">
+      <div className="sticky top-0 min-h-screen h-screen flex flex-col justify-between py-12 overflow-hidden">
         <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 blur-[200px] rounded-full pointer-events-none" />
 
-        {/* Top Header & Progress Line */}
-        <div className="max-w-7xl mx-auto w-full relative z-10 flex flex-col gap-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="w-2.5 h-2.5 rounded-full bg-accent animate-ping" />
-              <span className="text-xs uppercase tracking-[0.25em] text-muted font-mono">
-                ENGINEERING PROCESS // 03
-              </span>
-            </div>
-            <span className="text-xs font-mono text-muted hidden sm:block">
-              [ SCROLL VERTICALLY TO EXPLORE ]
-            </span>
-          </div>
-
-          {/* Horizontal Track Progress Indicator */}
-          <div className="w-full h-[2px] bg-white/10 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-accent"
-              style={{ width: progressWidth }}
-            />
-          </div>
+        <div className="max-w-7xl mx-auto w-full px-6 relative z-10 flex flex-col gap-6">
+          <SectionHeader num="03" tag="Engineering Process" title="How I Build" />
+          <span className="text-xs font-mono text-muted hidden sm:block">
+            {/* [ SCROLL VERTICALLY TO EXPLORE ]  */}
+          </span>
         </div>
 
-        {/* Middle: Horizontal Pinned Filmstrip Track */}
-        <div className="relative w-full max-w-7xl mx-auto my-auto z-10">
-          <motion.div style={{ x }} className="flex gap-8 w-[400%]">
-            
+        {/* Viewport wrapper */}
+        <div className="relative w-full z-10 flex-1 flex items-center min-h-0 my-auto">
+          <motion.div
+            ref={trackRef}
+            style={{ x }}
+            className="flex gap-8 w-max pl-6 xl:pl-[calc((100vw-80rem)/2+1.5rem)] pr-6 xl:pr-[calc((100vw-80rem)/2+1.5rem)]"
+          >
             {slides.map((slide) => (
-              <div
-                key={slide.id}
-                className="w-[100%] max-w-[90vw] md:max-w-[800px]"
-              >
+              <div key={slide.id} className="w-[85vw] sm:w-[75vw] md:w-[700px] lg:w-[800px] shrink-0">
                 <div className="relative rounded-3xl bg-white/[0.02] border border-white/10 p-8 sm:p-12 backdrop-blur-xl overflow-hidden min-h-[440px] flex flex-col justify-between group hover:border-accent/40 transition-colors duration-500">
-                  
-                  {/* Slide Gradient Flare */}
                   <div
                     className={`absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tl ${slide.accent} blur-3xl rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-700`}
                   />
 
-                  {/* Card Header */}
                   <div>
                     <div className="flex items-center justify-between mb-8">
                       <span className="font-mono text-xs text-accent tracking-widest uppercase">
@@ -145,7 +128,6 @@ export default function HowIBuildFilmstrip() {
                     </p>
                   </div>
 
-                  {/* Interactive Visual Element per Slide */}
                   <div className="pt-8 border-t border-white/10 flex items-center justify-between">
                     <div className="flex items-center gap-2 font-mono text-xs text-muted">
                       <span className="w-1.5 h-1.5 rounded-full bg-accent" />
@@ -156,20 +138,11 @@ export default function HowIBuildFilmstrip() {
                       SLIDE {slide.number} / 04 →
                     </span>
                   </div>
-
                 </div>
               </div>
             ))}
-
           </motion.div>
         </div>
-
-        {/* Bottom Status */}
-        <div className="max-w-7xl mx-auto w-full relative z-10 flex items-center justify-between font-mono text-xs text-muted">
-          <span>PIPELINE: ACTIVE</span>
-          <span>01 — 04 STAGES</span>
-        </div>
-
       </div>
     </section>
   );

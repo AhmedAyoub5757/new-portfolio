@@ -9,6 +9,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import SectionHeader from "./SectionHeader";
 
 interface Service {
   id: string;
@@ -120,7 +121,7 @@ export default function ServicesScrollPinned() {
 
   return (
     // Height set to 300vh to give the user natural vertical scroll runway
-    <section ref={containerRef} className="relative bg-background h-[300vh]">
+    <section id="about" ref={containerRef} className="relative bg-background h-[300vh]">
       {/* Sticky viewport frame locks both sides while user scrolls vertical runway */}
       <div className="sticky top-0 h-screen flex flex-col justify-center px-6 overflow-hidden">
         
@@ -130,12 +131,7 @@ export default function ServicesScrollPinned() {
         <div className="max-w-6xl mx-auto w-full relative z-10">
           
           {/* Section Header */}
-          <div className="flex items-center gap-3 mb-10">
-            <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
-            <span className="text-xs uppercase tracking-[0.25em] text-muted font-mono">
-              Capabilities — 02
-            </span>
-          </div>
+            <SectionHeader num="02" tag="Capabilities" title="What I Build" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             

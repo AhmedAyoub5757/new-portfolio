@@ -1,4 +1,5 @@
 import Navbar from "../components/Navbar";
+import LenisProvider from "../components/LenisProvider";
 import "./globals.css";
 
 export default function RootLayout({
@@ -9,8 +10,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        <main className="pt-20">{children}</main>
+        <LenisProvider>
+          <Navbar />
+          <main className="pt-20">{children}</main>
+        </LenisProvider>
       </body>
     </html>
   );

@@ -6,6 +6,7 @@ import {
   useAnimationFrame,
   useTransform,
 } from "framer-motion";
+import SectionHeader from "./SectionHeader";
 
 interface Skill {
   id: string;
@@ -85,14 +86,8 @@ export default function SkillsMarquee() {
       {/* Background Ambient Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[350px] bg-accent/5 blur-[240px] rounded-full pointer-events-none" />
 
-      {/* Section Tag */}
-      <div className="max-w-7xl mx-auto w-full px-6 relative z-10 mb-12">
-        <div className="flex items-center gap-3">
-          <span className="w-2.5 h-2.5 rounded-full bg-accent animate-ping" />
-          <span className="text-xs uppercase tracking-[0.25em] text-muted font-mono">
-            TECH STACK // 04
-          </span>
-        </div>
+      <div className="max-w-6xl mx-auto w-full px-6 relative z-10 mb-12">
+        <SectionHeader num="04" tag="Tech Stack" title="Tools & Technologies" />
       </div>
 
       {/* Full-Width Runway with Fade Edge Masks */}

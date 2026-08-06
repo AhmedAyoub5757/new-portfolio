@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import SectionHeader from "./SectionHeader";
 import { ChevronLeft, ChevronRight, ExternalLink, BookOpen } from "lucide-react";
 
 type Post = {
@@ -109,14 +110,8 @@ export default function Blogs() {
     <section id="blogs" className="relative py-28 px-6 bg-background overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[500px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
 
-      <div className="relative max-w-3xl mx-auto">
-        <div className="flex items-end gap-4 mb-10">
-          <span className="text-6xl sm:text-7xl font-bold text-white/5 leading-none select-none">05</span>
-          <div className="pb-1">
-            <p className="text-accent text-sm font-mono tracking-widest mb-1">// WRITTEN WORK</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-text">The Card Catalog</h2>
-          </div>
-        </div>
+      <div className="relative max-w-6xl mx-auto">
+        <SectionHeader num="07" tag="Written Work" title="The Card Catalog" />
 
         {/* Tag filter chips */}
         <div className="flex flex-wrap gap-2 mb-10">

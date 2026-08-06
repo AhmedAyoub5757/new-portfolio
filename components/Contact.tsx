@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import SectionHeader from "./SectionHeader";
 import { Send, CheckCircle2, Mail, User, MessageSquare } from "lucide-react";
 
 export default function ContactForm() {
@@ -57,14 +58,8 @@ export default function ContactForm() {
     <section id="contact" className="relative py-28 px-6 bg-background overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[500px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
 
-      <div className="relative max-w-5xl mx-auto">
-        <div className="flex items-end gap-4 mb-14">
-          <span className="text-6xl sm:text-7xl font-bold text-white/5 leading-none select-none">07</span>
-          <div className="pb-1">
-            <p className="text-accent text-sm font-mono tracking-widest mb-1">// GET IN TOUCH</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-text">Send a Message</h2>
-          </div>
-        </div>
+      <div className="relative max-w-6xl mx-auto">
+        <SectionHeader num="08" tag="Get In Touch" title="Send a Message" />
 
         <div className="grid md:grid-cols-2 gap-12 items-start">
           {/* LEFT: Compose form */}

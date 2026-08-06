@@ -24,7 +24,7 @@ const icons = {
   ),
   twitter: (
     <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-      <path d="M18.9 2H22l-7.6 8.7L23 22h-6.8l-5.3-6.9L4.8 22H1.6l8.1-9.3L1 2h7l4.8 6.3L18.9 2Zm-1.2 18h1.9L7.4 3.9H5.3L17.7 20Z" />
+      <path d="M2 6.5v11h5.5L12 13l4.5 4.5H22v-11h-3.5L12 16 5.5 6.5H2z" />
     </svg>
   ),
   mail: (
@@ -38,7 +38,7 @@ const icons = {
 const socials = [
   { label: "GitHub", href: "https://github.com/your-username", icon: icons.github },
   { label: "LinkedIn", href: "https://linkedin.com/in/your-username", icon: icons.linkedin },
-  { label: "Twitter", href: "https://twitter.com/your-username", icon: icons.twitter },
+  { label: "Medium", href: "https://medium.com/@kkahmed5757", icon: icons.twitter },
   { label: "Email", href: "mailto:hello@ahmed.dev", icon: icons.mail },
 ];
 

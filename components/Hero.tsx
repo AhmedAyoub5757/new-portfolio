@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Code2, Palette, Sparkles, Rocket, Layers, Braces } from "lucide-react";
 import { Terminal } from "lucide-react";
+import { useLenisScroll } from "./LenisProvider";
 
 const roles = ["Frontend Developer", "UI/UX Enthusiast", "Problem Solver", "Creative Coder"];
 
@@ -19,6 +20,7 @@ const orbitIcons = [
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const lenisScroll = useLenisScroll();
 
   const [mouse, setMouse] = useState({ x: 50, y: 50 });
   const [center, setCenter] = useState({ x: 0, y: 0 });
@@ -28,6 +30,10 @@ export default function Hero() {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadDone, setDownloadDone] = useState(false);
+  const _ringR = 8;
+  const _ringC = Math.PI * 2 * _ringR;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const rect = sectionRef.current?.getBoundingClientRect();
@@ -143,36 +149,107 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.6s]">
-            <Link
+            <a
               href="#work"
+              onClick={(e) => {
+                e.preventDefault();
+                const target = document.getElementById("work");
+                if (target) {
+                  lenisScroll?.scrollToTarget(target);
+                }
+              }}
               className="group relative overflow-hidden bg-accent hover:bg-hover text-background font-semibold px-7 py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(255,122,0,0.35)] hover:shadow-[0_0_30px_rgba(255,167,51,0.55)] w-full sm:w-auto text-center"
             >
               View My Work
-            </Link>
-            <Link
-              href="/resume.pdf"
-              className="border border-white/15 hover:border-accent text-text hover:text-accent font-semibold px-7 py-3 rounded-full transition-all duration-300 hover:scale-105 w-full sm:w-auto text-center"
+            </a>
+            <a
+              href="/AhmedResume.pdf"
+              download
+              onClick={() => {
+                setIsDownloading(true);
+                setDownloadDone(false);
+                setTimeout(() => {
+                  setIsDownloading(false);
+                  setDownloadDone(true);
+                  setTimeout(() => setDownloadDone(false), 1400);
+                }, 1200);
+              }}
+              className="relative flex items-center justify-center gap-3 border border-white/15 hover:border-accent text-text hover:text-accent font-semibold px-7 py-3 rounded-full transition-all duration-300 hover:scale-105 w-full sm:w-auto"
             >
-              Download CV
-            </Link>
+              <span className="relative flex items-center justify-center w-6 h-6">
+                <svg width="24" height="24" viewBox="0 0 24 24" className="absolute inset-0">
+                  <circle cx="12" cy="12" r={_ringR} stroke="rgba(255,255,255,0.06)" strokeWidth="2" fill="transparent" />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r={_ringR}
+                    stroke="#FFA733"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    fill="transparent"
+                    style={{
+                      strokeDasharray: _ringC,
+                      strokeDashoffset: isDownloading ? 0 : _ringC,
+                      transition: "stroke-dashoffset 1.2s linear",
+                      transform: "rotate(-90deg)",
+                      transformOrigin: "50% 50%",
+                      filter: isDownloading ? "drop-shadow(0 4px 8px rgba(255,167,51,0.14))" : undefined,
+                    }}
+                  />
+                </svg>
+
+                {/* Arrow that drops into box */}
+                <svg width="18" height="18" viewBox="0 0 24 24" className="relative z-10">
+                  <g
+                    style={{
+                      transition: "transform 300ms cubic-bezier(.2,.9,.2,1), opacity 200ms",
+                      transform: isDownloading ? "translateY(3px) scale(0.95)" : downloadDone ? "translateY(-2px) scale(0)" : "translateY(0) scale(1)",
+                      opacity: downloadDone ? 0 : 1,
+                    }}
+                  >
+                    <path d="M12 3v10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M7 10l5 5 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                    <rect x="4" y="15.5" width="16" height="3" rx="1" fill="currentColor" opacity="0.06" />
+                  </g>
+
+                  {/* Check mark shown when done */}
+                  <g
+                    style={{
+                      transition: "transform 300ms cubic-bezier(.2,.9,.2,1), opacity 200ms",
+                      transform: downloadDone ? "scale(1)" : "scale(0.6)",
+                      opacity: downloadDone ? 1 : 0,
+                      transformOrigin: "50% 50%",
+                    }}
+                  >
+                    <path d="M20 6L9 17l-5-5" stroke="#22c55e" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  </g>
+                </svg>
+              </span>
+              <span className="text-sm">
+                {isDownloading ? "Downloading..." : downloadDone ? "Downloaded" : "Download CV"}
+              </span>
+            </a>
           </div>
 
-          <div className="flex items-center gap-5 justify-center md:justify-start mt-8 opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.7s]">
-            {[
-              { label: "GitHub", href: "https://github.com" },
-              { label: "LinkedIn", href: "https://linkedin.com" },
-              { label: "Twitter", href: "https://twitter.com" },
-            ].map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted hover:text-accent text-sm border-b border-transparent hover:border-accent transition-all duration-300 pb-0.5"
-              >
-                {social.label}
-              </a>
-            ))}
+          <div className="flex items-center gap-4 justify-center md:justify-start mt-8 opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.7s]">
+            {/* Social icons: reuse footer SVG styles */}
+            <a href="https://github.com/your-username" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors duration-300">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.81 1.18 1.83 1.18 3.09 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.06.78 2.14 0 1.54-.01 2.79-.01 3.17 0 .31.21.67.8.56A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
+              </svg>
+            </a>
+
+            <a href="https://linkedin.com/in/your-username" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors duration-300">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27ZM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z" />
+              </svg>
+            </a>
+
+            <a href="https://medium.com/@kkahmed5757" target="_blank" rel="noopener noreferrer" aria-label="Medium" className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors duration-300">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                <path d="M2 6.5v11h5.5L12 13l4.5 4.5H22v-11h-3.5L12 16 5.5 6.5H2z" />
+              </svg>
+            </a>
           </div>
         </div>
 
@@ -349,6 +426,13 @@ export default function Hero() {
       {/* Scroll indicator */}
       <Link
         href="#about"
+        onClick={(e) => {
+          e.preventDefault();
+          const target = document.getElementById("about");
+          if (target) {
+            lenisScroll?.scrollToTarget(target);
+          }
+        }}
         className="hidden sm:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-2 text-muted hover:text-accent transition-colors duration-300"
       >
         <span className="text-xs tracking-widest">SCROLL</span>

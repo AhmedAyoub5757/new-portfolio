@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import SectionHeader from "./SectionHeader";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
@@ -149,14 +150,8 @@ export default function Experience() {
     >
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[500px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
 
-      <div className="relative max-w-5xl mx-auto">
-        <div className="flex items-end gap-4 mb-10">
-          <span className="text-6xl sm:text-7xl font-bold text-white/5 leading-none select-none">03</span>
-          <div className="pb-1">
-            <p className="text-accent text-sm font-mono tracking-widest mb-1">// EXPERIENCE</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-text">Career Departures</h2>
-          </div>
-        </div>
+      <div className="relative max-w-6xl mx-auto">
+        <SectionHeader num="06" tag="Experience" title="Career Departures" />
 
         {/* Board frame */}
         <div className="rounded-2xl border border-white/10 bg-[#0F0F11] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.5)]">
