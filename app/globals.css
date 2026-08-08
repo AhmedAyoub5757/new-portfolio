@@ -49,6 +49,31 @@ body {
 
 html {
   scroll-behavior: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-accent) var(--color-background);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-accent), var(--color-hover));
+  border: 3px solid var(--color-background);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--color-hover), var(--color-accent));
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--color-background);
 }
 
 /* Logo draw animation */
@@ -158,3 +183,4 @@ html {
   55% { transform: scaleY(1.15); }
   100% { transform: scaleY(1); opacity: 1; filter: blur(0); }
 }
+

@@ -2,20 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Code2, Palette, Sparkles, Rocket, Layers, Braces } from "lucide-react";
-import { Terminal } from "lucide-react";
+import { Code2, Palette, Sparkles, Rocket, Layers, Braces, Terminal } from "lucide-react";
 import { useLenisScroll } from "./LenisProvider";
 
 const roles = ["Frontend Developer", "UI/UX Enthusiast", "Problem Solver", "Creative Coder"];
-
-const orbitIcons = [
-  { Icon: Code2, style: "top-[-8%] left-1/2 -translate-x-1/2" },
-  { Icon: Palette, style: "top-[20%] right-[-12%]" },
-  { Icon: Sparkles, style: "bottom-[15%] right-[-8%]" },
-  { Icon: Rocket, style: "bottom-[-8%] left-1/2 -translate-x-1/2" },
-  { Icon: Layers, style: "bottom-[15%] left-[-10%]" },
-  { Icon: Braces, style: "top-[20%] left-[-12%]" },
-];
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -52,7 +42,7 @@ export default function Hero() {
     if (!rect) return;
     const px = (e.clientX - rect.left) / rect.width;
     const py = (e.clientY - rect.top) / rect.height;
-    setTilt({ rx: (0.5 - py) * 16, ry: (px - 0.5) * 16 });
+    setTilt({ rx: (0.5 - py) * 14, ry: (px - 0.5) * 14 });
     setGlare({ x: px * 100, y: py * 100, opacity: 0.5 });
   };
 
@@ -88,7 +78,7 @@ export default function Hero() {
       ref={sectionRef}
       onMouseMove={handleMouseMove}
       id="home"
-      className="relative min-h-screen overflow-hidden flex items-center px-6"
+      className="relative w-full max-w-full overflow-x-hidden min-h-[40vh] md:min-h-[50vh] lg:min-h-[60vh] 2xl:min-h-[50vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24 pb-12 lg:pt-20 lg:pb-8"
       style={{
         background: `radial-gradient(600px circle at ${mouse.x}% ${mouse.y}%, rgba(255,122,0,0.12), transparent 70%), #0B0B0C`,
       }}
@@ -107,29 +97,29 @@ export default function Hero() {
         }}
       />
 
-      {/* Floating orbs (parallax) */}
+      {/* Floating orbs */}
       <div
-        className="absolute top-1/4 left-[8%] w-40 h-40 sm:w-56 sm:h-56 rounded-full bg-accent/20 blur-3xl animate-[float_6s_ease-in-out_infinite] pointer-events-none"
+        className="absolute top-1/4 left-[5%] w-36 h-36 sm:w-56 sm:h-56 rounded-full bg-accent/20 blur-3xl animate-[float_6s_ease-in-out_infinite] pointer-events-none"
         style={{ transform: `translate(${center.x}px, ${center.y}px)` }}
       />
       <div
-        className="absolute bottom-1/4 right-[10%] w-48 h-48 sm:w-72 sm:h-72 rounded-full bg-hover/10 blur-3xl animate-[float-slow_8s_ease-in-out_infinite] pointer-events-none"
+        className="absolute bottom-1/4 right-[5%] w-40 h-40 sm:w-72 sm:h-72 rounded-full bg-hover/10 blur-3xl animate-[float-slow_8s_ease-in-out_infinite] pointer-events-none"
         style={{ transform: `translate(${-center.x}px, ${-center.y}px)` }}
       />
 
-      <div className="relative z-10 max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-16 items-center">
-        {/* LEFT: Text content */}
-        <div className="text-center md:text-left order-2 md:order-1">
-          <div className="inline-flex items-center gap-2 bg-card border border-white/10 rounded-full px-4 py-1.5 mb-6 opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.1s]">
+      <div className="relative z-10 max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
+        {/* LEFT: Text content (Order 1 for mobile top position) */}
+        <div className="text-center md:text-left order-1 flex flex-col items-center md:items-start">
+          <div className="inline-flex items-center gap-2 bg-card border border-white/10 rounded-full px-3.5 py-1 mb-4 lg:mb-3 opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.1s]">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-[pulse-dot_2s_infinite]" />
             <span className="text-xs text-muted tracking-wide">Available for work</span>
           </div>
 
-          <p className="text-muted text-lg mb-2 opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.2s]">
+          <p className="text-muted text-base sm:text-lg mb-1 opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.2s]">
             Hi, I&apos;m
           </p>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-4 opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.3s]">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-3 lg:mb-2 opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.3s]">
             <span
               className="bg-clip-text text-transparent bg-[length:200%_auto] animate-[gradient-shift_4s_ease_infinite]"
               style={{ backgroundImage: "linear-gradient(90deg, #FF7A00, #FFA733, #FF7A00)" }}
@@ -138,17 +128,19 @@ export default function Hero() {
             </span>
           </h1>
 
-          <div className="h-9 mb-6 opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.4s]">
-            <span className="text-xl sm:text-2xl text-text font-medium">{displayText}</span>
-            <span className="inline-block w-[2px] h-6 bg-accent ml-1 align-middle animate-[blink-caret_0.8s_steps(1)_infinite]" />
+          <div className="hidden md:block min-h-[2rem] sm:min-h-[2.25rem] mb-4 lg:mb-3 flex items-center justify-center md:justify-start opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.4s]">
+            <span className="text-lg sm:text-2xl text-text font-medium inline-block">
+              {displayText || "\u00A0"}
+            </span>
+            <span className="inline-block w-[2px] h-5 sm:h-6 bg-accent ml-1 align-middle animate-[blink-caret_0.8s_steps(1)_infinite]" />
           </div>
 
-          <p className="text-muted max-w-md mx-auto md:mx-0 mb-8 leading-relaxed opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.5s]">
+          <p className="text-muted text-sm sm:text-base max-w-md mx-auto md:mx-0 mb-6 lg:mb-5 leading-relaxed opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.5s]">
             I build fast, accessible, and visually engaging web experiences —
             turning ideas into interfaces people enjoy using.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.6s]">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 justify-center md:justify-start w-full sm:w-auto opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.6s]">
             <a
               href="#work"
               onClick={(e) => {
@@ -158,7 +150,7 @@ export default function Hero() {
                   lenisScroll?.scrollToTarget(target);
                 }
               }}
-              className="group relative overflow-hidden bg-accent hover:bg-hover text-background font-semibold px-7 py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(255,122,0,0.35)] hover:shadow-[0_0_30px_rgba(255,167,51,0.55)] w-full sm:w-auto text-center"
+              className="group relative overflow-hidden bg-accent hover:bg-hover text-background font-semibold px-6 py-2.5 sm:px-7 sm:py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(255,122,0,0.35)] hover:shadow-[0_0_30px_rgba(255,167,51,0.55)] w-full sm:w-auto text-center text-sm sm:text-base"
             >
               View My Work
             </a>
@@ -174,10 +166,10 @@ export default function Hero() {
                   setTimeout(() => setDownloadDone(false), 1400);
                 }, 1200);
               }}
-              className="relative flex items-center justify-center gap-3 border border-white/15 hover:border-accent text-text hover:text-accent font-semibold px-7 py-3 rounded-full transition-all duration-300 hover:scale-105 w-full sm:w-auto"
+              className="relative flex items-center justify-center gap-2.5 border border-white/15 hover:border-accent text-text hover:text-accent font-semibold px-6 py-2.5 sm:px-7 sm:py-3 rounded-full transition-all duration-300 hover:scale-105 w-full sm:w-auto text-sm sm:text-base"
             >
-              <span className="relative flex items-center justify-center w-6 h-6">
-                <svg width="24" height="24" viewBox="0 0 24 24" className="absolute inset-0">
+              <span className="relative flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6">
+                <svg width="24" height="24" viewBox="0 0 24 24" className="absolute inset-0 w-full h-full">
                   <circle cx="12" cy="12" r={_ringR} stroke="rgba(255,255,255,0.06)" strokeWidth="2" fill="transparent" />
                   <circle
                     cx="12"
@@ -198,8 +190,7 @@ export default function Hero() {
                   />
                 </svg>
 
-                {/* Arrow that drops into box */}
-                <svg width="18" height="18" viewBox="0 0 24 24" className="relative z-10">
+                <svg width="18" height="18" viewBox="0 0 24 24" className="relative z-10 w-4 h-4 sm:w-4.5 sm:h-4.5">
                   <g
                     style={{
                       transition: "transform 300ms cubic-bezier(.2,.9,.2,1), opacity 200ms",
@@ -212,7 +203,6 @@ export default function Hero() {
                     <rect x="4" y="15.5" width="16" height="3" rx="1" fill="currentColor" opacity="0.06" />
                   </g>
 
-                  {/* Check mark shown when done */}
                   <g
                     style={{
                       transition: "transform 300ms cubic-bezier(.2,.9,.2,1), opacity 200ms",
@@ -225,14 +215,13 @@ export default function Hero() {
                   </g>
                 </svg>
               </span>
-              <span className="text-sm">
+              <span>
                 {isDownloading ? "Downloading..." : downloadDone ? "Downloaded" : "Download CV"}
               </span>
             </a>
           </div>
 
-          <div className="flex items-center gap-4 justify-center md:justify-start mt-8 opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.7s]">
-            {/* Social icons: reuse footer SVG styles */}
+          <div className="flex items-center gap-4 justify-center md:justify-start mt-6 lg:mt-5 opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.7s]">
             <a href="https://github.com/your-username" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors duration-300">
               <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                 <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.81 1.18 1.83 1.18 3.09 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.06.78 2.14 0 1.54-.01 2.79-.01 3.17 0 .31.21.67.8.56A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
@@ -253,25 +242,24 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* RIGHT: Interactive 3D tilt card */}
-        {/* RIGHT: Self-typing code editor */}
+        {/* RIGHT: Code Editor Container (Order 2 for mobile bottom position) */}
         <div
-          className="order-1 md:order-2 opacity-0 animate-[fade-in-down_0.8s_ease_forwards_0.3s] w-full max-w-md mx-auto"
+          className="order-2 opacity-0 animate-[fade-in-down_0.8s_ease_forwards_0.3s] w-full max-w-md mx-auto"
           style={{ perspective: "1200px" }}
         >
-          <div className="relative">
+          <div className="relative w-full">
             {/* Glow behind editor */}
-            <div className="absolute -inset-6 rounded-3xl bg-accent/15 blur-3xl -z-10 animate-[glow-pulse_4s_ease-in-out_infinite]" />
+            <div className="absolute -inset-4 sm:-inset-6 rounded-3xl bg-accent/15 blur-2xl sm:blur-3xl -z-10 animate-[glow-pulse_4s_ease-in-out_infinite]" />
 
             <div
               ref={cardRef}
               onMouseMove={handleCardMove}
               onMouseLeave={handleCardLeave}
-              className="relative rounded-2xl bg-[#0F0F11] border border-white/10 overflow-hidden transition-transform duration-200 ease-out will-change-transform"
+              className="relative rounded-xl sm:rounded-2xl bg-[#0F0F11] border border-white/10 overflow-hidden transition-transform duration-200 ease-out will-change-transform max-w-full"
               style={{
                 transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
                 transformStyle: "preserve-3d",
-                boxShadow: "0 25px 60px rgba(0,0,0,0.55)",
+                boxShadow: "0 20px 50px rgba(0,0,0,0.55)",
               }}
             >
               {/* Glare */}
@@ -284,29 +272,29 @@ export default function Hero() {
               />
 
               {/* Title bar */}
-              <div className="flex items-center justify-between px-4 py-3 bg-white/[0.03] border-b border-white/10">
+              <div className="flex items-center justify-between px-3.5 sm:px-4 py-2.5 sm:py-3 bg-white/[0.03] border-b border-white/10">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-[#FF5F56]" />
-                  <span className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
-                  <span className="w-3 h-3 rounded-full bg-[#27C93F]" />
+                  <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F56]" />
+                  <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FFBD2E]" />
+                  <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27C93F]" />
                 </div>
-                <div className="flex items-center gap-1.5 text-muted text-[11px]">
+                <div className="flex items-center gap-1.5 text-muted text-[10px] sm:text-[11px]">
                   <Terminal size={12} />
                   <span>ahmed.ts</span>
                 </div>
               </div>
 
               {/* Tabs */}
-              <div className="flex text-xs bg-white/[0.02] border-b border-white/10">
-                <span className="px-4 py-2 text-text border-r border-white/10 border-t-2 border-t-accent bg-white/[0.04]">
+              <div className="flex text-[11px] sm:text-xs bg-white/[0.02] border-b border-white/10 overflow-x-auto no-scrollbar">
+                <span className="px-3 sm:px-4 py-1.5 sm:py-2 text-text border-r border-white/10 border-t-2 border-t-accent bg-white/[0.04] shrink-0">
                   ahmed.ts
                 </span>
-                <span className="px-4 py-2 text-muted border-r border-white/10">about.ts</span>
-                <span className="px-4 py-2 text-muted">skills.ts</span>
+                <span className="px-3 sm:px-4 py-1.5 sm:py-2 text-muted border-r border-white/10 shrink-0">about.ts</span>
+                <span className="px-3 sm:px-4 py-1.5 sm:py-2 text-muted shrink-0">skills.ts</span>
               </div>
 
               {/* Code body */}
-              <div className="p-5 font-mono text-[13px] sm:text-sm leading-relaxed">
+              <div className="p-3 sm:p-5 font-mono text-[12px] sm:text-[13px] leading-relaxed overflow-x-auto">
                 {(() => {
                   const lines: { text: string; render: React.ReactNode }[] = [
                     {
@@ -367,7 +355,7 @@ export default function Hero() {
                   ];
 
                   let cumulativeDelay = 0.3;
-                  const speed = 0.045; // seconds per character
+                  const speed = 0.045;
 
                   return (
                     <>
@@ -377,8 +365,8 @@ export default function Hero() {
                         cumulativeDelay += duration + 0.08;
 
                         return (
-                          <div key={i} className="flex">
-                            <span className="text-muted/40 select-none w-6 shrink-0 text-right pr-3">
+                          <div key={i} className="flex min-w-max">
+                            <span className="text-muted/40 select-none w-5 sm:w-6 shrink-0 text-right pr-2 sm:pr-3">
                               {i + 1}
                             </span>
                             <span
@@ -393,11 +381,11 @@ export default function Hero() {
                           </div>
                         );
                       })}
-                      {/* Blinking cursor after typing completes */}
+                      {/* Blinking cursor */}
                       <div className="flex">
-                        <span className="w-6 shrink-0" />
+                        <span className="w-5 sm:w-6 shrink-0" />
                         <span
-                          className="inline-block w-[7px] h-[15px] bg-accent opacity-0"
+                          className="inline-block w-[6px] sm:w-[7px] h-[13px] sm:h-[15px] bg-accent opacity-0"
                           style={{
                             animation: `appear 0.01s forwards ${cumulativeDelay}s, blink-caret 0.8s steps(1) infinite ${cumulativeDelay}s`,
                           }}
@@ -409,14 +397,14 @@ export default function Hero() {
               </div>
 
               {/* Terminal footer */}
-              <div className="border-t border-white/10 bg-black/40 px-4 py-3 flex items-center justify-between opacity-0 animate-[fade-in-down_0.5s_ease_forwards_3.1s]">
-                <div className="flex items-center gap-2 text-[11px] font-mono">
+              <div className="border-t border-white/10 bg-black/40 px-3.5 sm:px-4 py-2.5 flex items-center justify-between opacity-0 animate-[fade-in-down_0.5s_ease_forwards_3.1s]">
+                <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-[pulse-dot_2s_infinite]" />
                   <span className="text-muted">
                     status: <span className="text-green-400">online</span>
                   </span>
                 </div>
-                <span className="text-[11px] text-muted font-mono">v2.0.1</span>
+                <span className="text-[10px] sm:text-[11px] text-muted font-mono">v2.0.1</span>
               </div>
             </div>
           </div>
@@ -433,10 +421,10 @@ export default function Hero() {
             lenisScroll?.scrollToTarget(target);
           }
         }}
-        className="hidden sm:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-2 text-muted hover:text-accent transition-colors duration-300"
+        className="hidden absolute bottom-4 left-1/2 -translate-x-1/2 flex-col items-center gap-1.5 text-muted hover:text-accent transition-colors duration-300"
       >
-        <span className="text-xs tracking-widest">SCROLL</span>
-        <div className="w-5 h-8 rounded-full border border-current flex justify-center pt-1.5">
+        <span className="text-[10px] tracking-widest">SCROLL</span>
+        <div className="w-4 h-7 rounded-full border border-current flex justify-center pt-1">
           <span className="w-1 h-1.5 rounded-full bg-current animate-[bounce-down_1.5s_ease-in-out_infinite]" />
         </div>
       </Link>

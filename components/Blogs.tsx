@@ -107,14 +107,14 @@ export default function Blogs() {
   };
 
   return (
-    <section id="blogs" className="relative py-28 px-6 bg-background overflow-hidden">
+    <section id="blogs" className="relative py-20 md:py-28 px-4 sm:px-6 bg-background overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[500px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto">
         <SectionHeader num="07" tag="Written Work" title="The Card Catalog" />
 
         {/* Tag filter chips */}
-        <div className="flex flex-wrap gap-2 mb-10">
+        <div className="flex flex-wrap gap-2 mb-8 md:mb-10">
           {tags.map((tag) => (
             <button
               key={tag}
@@ -130,9 +130,52 @@ export default function Blogs() {
           ))}
         </div>
 
-        {/* Catalog drawer */}
-        <div className="rounded-2xl border border-white/10 bg-[#0F0F11] p-6 sm:p-10 shadow-[0_25px_70px_rgba(0,0,0,0.5)]">
-          <div style={{ perspective: "1400px" }}>
+        {/* MOBILE VIEW (< 768px) */}
+        <div className="flex flex-col gap-4 md:hidden">
+          {filtered.map((item) => (
+            <article
+              key={item.id}
+              className="rounded-xl border border-white/10 bg-card p-5 relative overflow-hidden"
+            >
+              <div className="flex items-center justify-between mb-3 pb-3 border-b border-dashed border-white/10">
+                <span className="text-[10px] font-mono text-accent tracking-widest">
+                  VOL. {String(posts.findIndex((p) => p.id === item.id) + 1).padStart(2, "0")}
+                </span>
+                <span className="text-[10px] font-mono text-muted">{item.date}</span>
+              </div>
+
+              <p className="text-[10px] text-muted tracking-widest mb-1.5 uppercase font-mono">
+                SUBJECT: {item.tag}
+              </p>
+
+              <h3 className="text-base font-semibold text-text leading-snug mb-2">
+                {item.title}
+              </h3>
+
+              <p className="text-xs text-muted leading-relaxed mb-4">{item.blurb}</p>
+
+              <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/5">
+                <span className="flex items-center gap-1 text-[11px] text-muted">
+                  <BookOpen size={12} className="text-accent" />
+                  {item.readTime}
+                </span>
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-accent hover:text-hover font-medium transition-colors"
+                >
+                  Read on Medium
+                  <ExternalLink size={12} />
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* DESKTOP VIEW (>= 768px) */}
+        <div className="hidden md:block rounded-2xl border border-white/10 bg-[#0F0F11] p-6 sm:p-10 shadow-[0_25px_70px_rgba(0,0,0,0.5)]">
+          <div style={{ perspective: "1000px" }} className="w-full min-h-[360px] sm:min-h-[280px]">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={post?.id}
@@ -140,13 +183,13 @@ export default function Blogs() {
                 initial={{ rotateX: direction === 1 ? 90 : -90, opacity: 0 }}
                 animate={{ rotateX: 0, opacity: 1 }}
                 exit={{ rotateX: direction === 1 ? -90 : 90, opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-                style={{ transformOrigin: "top center" }}
-                className="relative rounded-xl bg-card border border-white/10 p-6 sm:p-8"
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+                style={{ transformOrigin: "top center", backfaceVisibility: "hidden" }}
+                className="relative rounded-xl bg-card border border-white/10 p-6 sm:p-8 w-full"
               >
                 {/* Punch holes */}
-                <div className="absolute -top-3 left-8 w-2.5 h-2.5 rounded-full bg-background border border-white/15" />
-                <div className="absolute -top-3 right-8 w-2.5 h-2.5 rounded-full bg-background border border-white/15" />
+                <div className="absolute -top-3 left-8 w-2.5 h-2.5 rounded-full bg-background border border-white/15 z-10" />
+                <div className="absolute -top-3 right-8 w-2.5 h-2.5 rounded-full bg-background border border-white/15 z-10" />
 
                 {/* Card header row */}
                 <div className="flex items-center justify-between mb-5 pb-4 border-b border-dashed border-white/15">
@@ -156,7 +199,9 @@ export default function Blogs() {
                   <span className="text-[11px] font-mono text-muted">{post?.date}</span>
                 </div>
 
-                <p className="text-[11px] text-muted tracking-widest mb-2">SUBJECT: {post?.tag.toUpperCase()}</p>
+                <p className="text-[11px] text-muted tracking-widest mb-2">
+                  SUBJECT: {post?.tag?.toUpperCase()}
+                </p>
                 <h3 className="text-xl sm:text-2xl font-semibold text-text leading-snug mb-4">
                   {post?.title}
                 </h3>

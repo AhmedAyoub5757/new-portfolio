@@ -89,7 +89,7 @@ function ImageCard({
           filter: `brightness(${brightness.get()})`,
           top: `calc(16% + ${index * 16}px)`,
         }}
-        className="relative w-full max-w-5xl h-[68vh] rounded-2xl sm:rounded-3xl border border-white/20 overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.9)] cursor-pointer group bg-neutral-950 transition-all duration-300 ease-out z-10"
+        className="relative w-full max-w-5xl h-[48vh] md:h-[68vh] rounded-2xl sm:rounded-3xl border border-white/20 overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.9)] cursor-pointer group bg-neutral-950 transition-all duration-300 ease-out z-10"
       >
         <img
           src={project.imageSrc}
@@ -129,7 +129,7 @@ export default function StackedImageGallery() {
     <section
       ref={containerRef}
       id="work"
-      className="relative bg-background pb-16 px-4 sm:px-8 select-none"
+      className="relative bg-background pb-4 md:pb-16 px-4 sm:px-8 select-none"
     >
       {/* Sticky Section Header */}
       <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md pt-6 pb-4">
@@ -137,9 +137,9 @@ export default function StackedImageGallery() {
           <div>
             <SectionHeader num="05" tag="Portfolio Showcase" title="Selected Works" />
           </div>
-          <span className="font-mono text-xs text-muted tracking-wider">
+          {/* <span className="font-mono text-xs text-muted tracking-wider">
             [ SCROLL TO STACK ]
-          </span>
+          </span> */}
         </div>
       </div>
 

@@ -1,11 +1,5 @@
 "use client";
 
-import {
-  motion,
-  useMotionValue,
-  useAnimationFrame,
-  useTransform,
-} from "framer-motion";
 import SectionHeader from "./SectionHeader";
 
 interface Skill {
@@ -34,45 +28,40 @@ const row2: Skill[] = [
 function MarqueeRow({
   items,
   baseVelocity = 0.15,
-  repeatCount = 4,
 }: {
   items: Skill[];
   baseVelocity: number;
-  repeatCount?: number;
 }) {
-  const baseX = useMotionValue(0);
-
-  // Repeat items dynamic number of times to guarantee full screen bleed
-  const repeatedItems = Array.from({ length: repeatCount }, () => items).flat();
-
-  useAnimationFrame((_, delta) => {
-    const moveBy = baseVelocity * (delta / 1000) * 8;
-    baseX.set(baseX.get() + moveBy);
-  });
-
-  // Seamless continuous modulo shift
-  const x = useTransform(baseX, (v) => `${(v % 50) - 50}%`);
+  const duration = `${Math.max(18, 30 - Math.abs(baseVelocity) * 40)}s`;
+  const direction = baseVelocity < 0 ? "normal" : "reverse";
 
   return (
     <div className="flex whitespace-nowrap overflow-hidden py-3 select-none">
-      <motion.div className="flex gap-6 min-w-max" style={{ x }}>
-        {repeatedItems.map((item, idx) => (
-          <div
-            key={`${item.id}-${idx}`}
-            className="px-7 py-5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl flex items-center gap-4"
-          >
-            <span className="text-3xl font-mono">{item.symbol}</span>
-            <div className="flex flex-col text-left">
-              <span className="font-mono text-sm tracking-tight text-text font-medium">
-                {item.name}
-              </span>
-              <span className="font-mono text-[10px] text-muted uppercase tracking-wider">
-                {item.category}
-              </span>
-            </div>
+      <div
+        className="flex w-max gap-6 min-w-max will-change-transform animate-[marquee_24s_linear_infinite]"
+        style={{ animationDuration: duration, animationDirection: direction }}
+      >
+        {[0, 1].map((groupIndex) => (
+          <div key={groupIndex} className="flex gap-6 min-w-max pr-6" aria-hidden={groupIndex === 1}>
+            {items.map((item) => (
+              <div
+                key={`${groupIndex}-${item.id}`}
+                className="px-7 py-5 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl flex items-center gap-4"
+              >
+                <span className="text-3xl font-mono">{item.symbol}</span>
+                <div className="flex flex-col text-left">
+                  <span className="font-mono text-sm tracking-tight text-text font-medium">
+                    {item.name}
+                  </span>
+                  <span className="font-mono text-[10px] text-muted uppercase tracking-wider">
+                    {item.category}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -91,13 +80,16 @@ export default function SkillsMarquee() {
       </div>
 
       {/* Full-Width Runway with Fade Edge Masks */}
-      <div className="w-full relative z-10 [mask-image:linear-gradient(to_right,transparent_0%,black_15%,black_85%,transparent_100%)]">
+      <div
+        className="w-full relative z-10 [mask-image:linear-gradient(to_right,transparent_0%,black_15%,black_85%,transparent_100%)]"
+        style={{ WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)" }}
+      >
         <div className="flex flex-col gap-4">
           {/* Row 1: Leftward Drift with 8x Extended Array Length */}
-          <MarqueeRow items={row1} baseVelocity={-0.15} repeatCount={8} />
+          <MarqueeRow items={row1} baseVelocity={-0.15} />
 
           {/* Row 2: Rightward Drift with 8x Extended Array Length */}
-          <MarqueeRow items={row2} baseVelocity={0.15} repeatCount={8} />
+          <MarqueeRow items={row2} baseVelocity={0.15} />
         </div>
       </div>
     </section>

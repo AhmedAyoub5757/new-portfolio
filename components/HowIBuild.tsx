@@ -84,64 +84,117 @@ export default function HowIBuildFilmstrip() {
   const x = useTransform(scrollYProgress, [0, 1], [0, -maxTranslate]);
 
   return (
-    <section ref={containerRef} className="relative bg-background h-[450vh]">
-      <div className="sticky top-0 min-h-screen h-screen flex flex-col justify-between py-12 overflow-hidden">
-        <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 blur-[200px] rounded-full pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto w-full px-6 relative z-10 flex flex-col gap-6">
+    <section className="relative bg-background">
+      {/* MOBILE LAYOUT (< md) */}
+      <div className="block md:hidden py-12 px-4 sm:px-6">
+        <div className="mb-8">
           <SectionHeader num="03" tag="Engineering Process" title="How I Build" />
-          <span className="text-xs font-mono text-muted hidden sm:block">
-            {/* [ SCROLL VERTICALLY TO EXPLORE ]  */}
-          </span>
         </div>
+        <div className="flex flex-col gap-6">
+          {slides.map((slide) => (
+            <div key={slide.id} className="w-full">
+              <div className="relative rounded-2xl bg-white/[0.02] border border-white/10 p-6 backdrop-blur-xl overflow-hidden min-h-[360px] flex flex-col justify-between">
+                <div
+                  className={`absolute -bottom-24 -right-24 w-72 h-72 bg-gradient-to-tl ${slide.accent} blur-3xl rounded-full pointer-events-none`}
+                />
 
-        {/* Viewport wrapper */}
-        <div className="relative w-full z-10 flex-1 flex items-center min-h-0 my-auto">
-          <motion.div
-            ref={trackRef}
-            style={{ x }}
-            className="flex gap-8 w-max pl-6 xl:pl-[calc((100vw-80rem)/2+1.5rem)] pr-6 xl:pr-[calc((100vw-80rem)/2+1.5rem)]"
-          >
-            {slides.map((slide) => (
-              <div key={slide.id} className="w-[85vw] sm:w-[75vw] md:w-[700px] lg:w-[800px] shrink-0">
-                <div className="relative rounded-3xl bg-white/[0.02] border border-white/10 p-8 sm:p-12 backdrop-blur-xl overflow-hidden min-h-[440px] flex flex-col justify-between group hover:border-accent/40 transition-colors duration-500">
-                  <div
-                    className={`absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tl ${slide.accent} blur-3xl rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-700`}
-                  />
-
-                  <div>
-                    <div className="flex items-center justify-between mb-8">
-                      <span className="font-mono text-xs text-accent tracking-widest uppercase">
-                        {slide.tag}
-                      </span>
-                      <span className="font-mono text-3xl font-light text-white/20 group-hover:text-accent transition-colors">
-                        {slide.number}
-                      </span>
-                    </div>
-
-                    <h3 className="text-3xl sm:text-4xl md:text-5xl font-medium text-text leading-[1.15] tracking-tight mb-6 max-w-xl">
-                      {slide.headline}
-                    </h3>
-
-                    <p className="text-sm sm:text-base text-muted leading-relaxed max-w-lg">
-                      {slide.statement}
-                    </p>
-                  </div>
-
-                  <div className="pt-8 border-t border-white/10 flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-mono text-xs text-muted">
-                      <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                      <span>STAGE_{slide.number}_VERIFIED</span>
-                    </div>
-
-                    <span className="text-xs font-mono text-muted group-hover:text-accent group-hover:translate-x-1 transition-all">
-                      SLIDE {slide.number} / 04 →
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="font-mono text-[10px] text-accent tracking-widest uppercase">
+                      {slide.tag}
+                    </span>
+                    <span className="font-mono text-2xl font-light text-white/20">
+                      {slide.number}
                     </span>
                   </div>
+
+                  <h3 className="text-2xl font-medium text-text leading-[1.2] tracking-tight mb-4">
+                    {slide.headline}
+                  </h3>
+
+                  <p className="text-xs text-muted leading-relaxed">
+                    {slide.statement}
+                  </p>
+                </div>
+
+                <div className="pt-6 border-t border-white/10 flex items-center justify-between mt-6">
+                  <div className="flex items-center gap-2 font-mono text-[10px] text-muted">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                    <span>STAGE_{slide.number}_VERIFIED</span>
+                  </div>
+
+                  <span className="text-[10px] font-mono text-muted">
+                    SLIDE {slide.number} / 04 →
+                  </span>
                 </div>
               </div>
-            ))}
-          </motion.div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* DESKTOP LAYOUT (>= md) */}
+      <div ref={containerRef} className="hidden md:block relative h-[450vh]">
+        <div className="sticky top-0 h-screen flex flex-col justify-between py-12 overflow-hidden">
+          <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 blur-[200px] rounded-full pointer-events-none" />
+
+          <div className="max-w-7xl mx-auto w-full px-6 relative z-10 flex flex-col gap-6">
+            <SectionHeader num="03" tag="Engineering Process" title="How I Build" />
+            <span className="text-xs font-mono text-muted">
+              {/* [ SCROLL VERTICALLY TO EXPLORE ]  */}
+            </span>
+          </div>
+
+          <div className="relative w-full z-10 flex-1 flex items-center min-h-0 my-auto">
+            <motion.div
+              ref={trackRef}
+              style={{ x }}
+              className="flex gap-8 w-max pl-6 xl:pl-[calc((100vw-80rem)/2+1.5rem)] pr-6 xl:pr-[calc((100vw-80rem)/2+1.5rem)]"
+            >
+              {slides.map((slide) => (
+                <div
+                  key={slide.id}
+                  className="w-[700px] lg:w-[800px] shrink-0"
+                >
+                  <div className="relative rounded-3xl bg-white/[0.02] border border-white/10 p-8 sm:p-12 backdrop-blur-xl overflow-hidden min-h-[440px] flex flex-col justify-between group hover:border-accent/40 transition-colors duration-500">
+                    <div
+                      className={`absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tl ${slide.accent} blur-3xl rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-700`}
+                    />
+
+                    <div>
+                      <div className="flex items-center justify-between mb-8">
+                        <span className="font-mono text-xs text-accent tracking-widest uppercase">
+                          {slide.tag}
+                        </span>
+                        <span className="font-mono text-3xl font-light text-white/20 group-hover:text-accent transition-colors">
+                          {slide.number}
+                        </span>
+                      </div>
+
+                      <h3 className="text-3xl sm:text-4xl md:text-5xl font-medium text-text leading-[1.15] tracking-tight mb-6 max-w-xl">
+                        {slide.headline}
+                      </h3>
+
+                      <p className="text-sm sm:text-base text-muted leading-relaxed max-w-lg">
+                        {slide.statement}
+                      </p>
+                    </div>
+
+                    <div className="pt-8 border-t border-white/10 flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-mono text-xs text-muted">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                        <span>STAGE_{slide.number}_VERIFIED</span>
+                      </div>
+
+                      <span className="text-xs font-mono text-muted group-hover:text-accent group-hover:translate-x-1 transition-all">
+                        SLIDE {slide.number} / 04 →
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>
