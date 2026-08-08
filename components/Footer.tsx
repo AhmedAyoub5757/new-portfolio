@@ -35,10 +35,10 @@ const icons = {
 };
 
 const socials = [
-  { label: "GitHub", href: "https://github.com/your-username", icon: icons.github },
-  { label: "LinkedIn", href: "https://linkedin.com/in/your-username", icon: icons.linkedin },
+  { label: "GitHub", href: "https://github.com/AhmedAyoub5757", icon: icons.github },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/ahmed-ayoub-3a262b279/", icon: icons.linkedin },
   { label: "Medium", href: "https://medium.com/@kkahmed5757", icon: icons.twitter },
-  { label: "Email", href: "mailto:hello@ahmed.dev", icon: icons.mail },
+  { label: "Email", href: "mailto:ahmed42.dev@gmail.com", icon: icons.mail },
 ];
 
 export default function Footer() {
@@ -119,10 +119,10 @@ export default function Footer() {
           <div>
             <p className="text-xs text-muted tracking-widest mb-4">CONNECT</p>
             <a
-              href="mailto:hello@ahmed.dev"
+              href="mailto:ahmed42.dev@gmail.com"
               className="block text-sm text-text/80 hover:text-accent transition-colors duration-300 mb-1"
             >
-              hello@ahmed.dev
+              ahmed42.dev@gmail.com
             </a>
             <p className="text-sm text-muted mb-5">Karachi, Pakistan</p>
 
