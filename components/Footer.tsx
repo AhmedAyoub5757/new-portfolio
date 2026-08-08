@@ -10,7 +10,6 @@ const quickLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
-// Inline SVG icons — no external icon-set dependency, guaranteed to render
 const icons = {
   github: (
     <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
@@ -42,24 +41,7 @@ const socials = [
   { label: "Email", href: "mailto:hello@ahmed.dev", icon: icons.mail },
 ];
 
-function useInView() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => e.isIntersecting && (setInView(true), obs.disconnect()),
-      { threshold: 0.2 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-  return { ref, inView };
-}
-
 export default function Footer() {
-  const { ref: footerRef, inView } = useInView();
   const bigTextRef = useRef<HTMLDivElement>(null);
   const [spot, setSpot] = useState({ x: 50, y: -20 });
 
@@ -75,135 +57,115 @@ export default function Footer() {
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
-    <footer ref={footerRef} className="relative bg-background overflow-hidden">
+    <footer className="relative bg-background overflow-hidden">
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
 
-      <div
-        className="relative max-w-6xl mx-auto px-6 pt-20 pb-10 overflow-hidden"
-        style={{
-          clipPath: inView ? "inset(0% 0 0 0)" : "inset(100% 0 0 0)",
-          transition: "clip-path 0.9s cubic-bezier(0.65,0,0.35,1)",
-        }}
-      >
+      <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-10">
+        {/* Flashlight big text */}
         <div
-          style={{
-            opacity: inView ? 1 : 0,
-            transform: inView ? "translateY(0)" : "translateY(40px)",
-            transition: "opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s",
-          }}
+          ref={bigTextRef}
+          onMouseMove={handleMove}
+          onMouseLeave={() => setSpot({ x: 50, y: -20 })}
+          className="relative select-none cursor-default mb-16 overflow-hidden"
         >
-          {/* Flashlight big text */}
-          <div
-            ref={bigTextRef}
-            onMouseMove={handleMove}
-            onMouseLeave={() => setSpot({ x: 50, y: -20 })}
-            className="relative select-none cursor-default mb-16"
+          <h2
+            className="text-[14vw] sm:text-[11vw] lg:text-[9rem] font-bold leading-none tracking-tight text-transparent"
+            style={{ WebkitTextStroke: "1px rgba(255,255,255,0.12)" }}
           >
-            <h2
-              className="text-[15vw] sm:text-[11vw] lg:text-[9rem] font-bold leading-none tracking-tight text-transparent"
-              style={{ WebkitTextStroke: "1px rgba(255,255,255,0.12)" }}
-            >
-              LET&apos;S TALK
-            </h2>
-            <h2
-              className="absolute inset-0 text-[15vw] sm:text-[11vw] lg:text-[9rem] font-bold leading-none tracking-tight text-accent pointer-events-none"
-              style={{
-                WebkitMaskImage: `radial-gradient(180px circle at ${spot.x}% ${spot.y}%, black 0%, transparent 80%)`,
-                maskImage: `radial-gradient(180px circle at ${spot.x}% ${spot.y}%, black 0%, transparent 80%)`,
-              }}
-            >
-              LET&apos;S TALK
-            </h2>
+            LET&apos;S TALK
+          </h2>
+          <h2
+            className="absolute inset-0 text-[14vw] sm:text-[11vw] lg:text-[9rem] font-bold leading-none tracking-tight text-accent pointer-events-none hidden md:block"
+            style={{
+              WebkitMaskImage: `radial-gradient(180px circle at ${spot.x}% ${spot.y}%, black 0%, transparent 80%)`,
+              maskImage: `radial-gradient(180px circle at ${spot.x}% ${spot.y}%, black 0%, transparent 80%)`,
+            }}
+          >
+            LET&apos;S TALK
+          </h2>
+        </div>
+
+        {/* Info grid */}
+        <div className="grid sm:grid-cols-3 gap-10 mb-14">
+          {/* Bio blurb */}
+          <div>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-hover flex items-center justify-center text-background font-bold text-sm mb-4">
+              A
+            </div>
+            <p className="text-sm text-muted leading-relaxed max-w-xs">
+              CS graduate and frontend developer building fast, thoughtful web
+              experiences — currently at Redbox Technologies.
+            </p>
           </div>
 
-          {/* Info grid */}
-          <div className="grid sm:grid-cols-3 gap-10 mb-14">
-            {/* Bio blurb */}
-            <div>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-hover flex items-center justify-center text-background font-bold text-sm mb-4">
-                A
-              </div>
-              <p className="text-sm text-muted leading-relaxed max-w-xs">
-                CS graduate and frontend developer building fast, thoughtful
-                web experiences — currently at Redbox Technologies.
-              </p>
-            </div>
-
-            {/* Quick links */}
-            <div>
-              <p className="text-xs text-muted tracking-widest mb-4">QUICK LINKS</p>
-              <ul className="space-y-2.5">
-                {quickLinks.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-text/80 hover:text-accent transition-colors duration-300"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Contact + socials */}
-            <div>
-              <p className="text-xs text-muted tracking-widest mb-4">CONNECT</p>
-              <a
-                href="mailto:hello@ahmed.dev"
-                className="block text-sm text-text/80 hover:text-accent transition-colors duration-300 mb-1"
-              >
-                hello@ahmed.dev
-              </a>
-              <p className="text-sm text-muted mb-5">Karachi, Pakistan</p>
-
-              <div className="flex items-center gap-3">
-                {socials.map((s) => (
+          {/* Quick links */}
+          <div>
+            <p className="text-xs text-muted tracking-widest mb-4">QUICK LINKS</p>
+            <ul className="space-y-2.5">
+              {quickLinks.map((link) => (
+                <li key={link.label}>
                   <a
-                    key={s.label}
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={s.label}
-                    className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors duration-300"
+                    href={link.href}
+                    className="text-sm text-text/80 hover:text-accent transition-colors duration-300"
                   >
-                    {s.icon}
+                    {link.label}
                   </a>
-                ))}
-              </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact + socials */}
+          <div>
+            <p className="text-xs text-muted tracking-widest mb-4">CONNECT</p>
+            <a
+              href="mailto:hello@ahmed.dev"
+              className="block text-sm text-text/80 hover:text-accent transition-colors duration-300 mb-1"
+            >
+              hello@ahmed.dev
+            </a>
+            <p className="text-sm text-muted mb-5">Karachi, Pakistan</p>
+
+            <div className="flex items-center gap-3">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors duration-300"
+                >
+                  {s.icon}
+                </a>
+              ))}
             </div>
           </div>
+        </div>
 
-          {/* Separator */}
-          <div className="relative h-px bg-white/10 mb-8 overflow-hidden">
-            <div
-              className="absolute inset-y-0 left-0 bg-accent"
-              style={{
-                width: inView ? "100%" : "0%",
-                transition: "width 1s ease 0.5s",
-              }}
-            />
-          </div>
+        {/* Separator */}
+        <div className="relative h-px bg-white/10 mb-8 overflow-hidden">
+          <div className="absolute inset-0 bg-accent" />
+        </div>
 
-          {/* Bottom row */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <p className="text-sm text-muted order-2 sm:order-1">
-              © {new Date().getFullYear()} Ahmed. All rights reserved.
-            </p>
-            <p className="text-xs text-muted/60 order-3 sm:order-2">
-              Built with Next.js & Tailwind CSS
-            </p>
-            <button
-              onClick={scrollToTop}
-              aria-label="Back to top"
-              className="order-1 sm:order-3 flex items-center gap-2 text-xs text-muted hover:text-accent transition-colors duration-300 group"
-            >
-              Back to top
-              <span className="w-7 h-7 rounded-full border border-white/10 group-hover:border-accent flex items-center justify-center transition-colors duration-300">
-                <ArrowUp size={12} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
-              </span>
-            </button>
-          </div>
+        {/* Bottom row */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+          <p className="text-sm text-muted order-2 sm:order-1">
+            © {new Date().getFullYear()} Ahmed. All rights reserved.
+          </p>
+          <p className="text-xs text-muted/60 order-3 sm:order-2">
+            Built with Next.js & Tailwind CSS
+          </p>
+          <button
+            onClick={scrollToTop}
+            aria-label="Back to top"
+            className="order-1 sm:order-3 flex items-center gap-2 text-xs text-muted hover:text-accent transition-colors duration-300 group"
+          >
+            Back to top
+            <span className="w-7 h-7 rounded-full border border-white/10 group-hover:border-accent flex items-center justify-center transition-colors duration-300">
+              <ArrowUp size={12} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
+            </span>
+          </button>
         </div>
       </div>
     </footer>

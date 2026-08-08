@@ -55,7 +55,7 @@ export default function ContactForm() {
   };
 
   return (
-    <section id="contact" className="relative py-28 px-6 bg-background overflow-hidden">
+    <section id="contact" className="relative py-16 sm:py-28 px-4 sm:px-6 bg-background overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[500px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto">
@@ -127,10 +127,10 @@ export default function ContactForm() {
             </button>
           </form>
 
-          {/* RIGHT: Live preview */}
-          <div className="relative flex justify-center md:justify-end pt-2">
+          {/* RIGHT: Live preview (Hidden on mobile, visible on desktop) */}
+          <div className="hidden md:flex relative justify-end pt-2">
             <div className="relative w-full max-w-sm">
-              <p className="text-xs text-muted tracking-wide mb-3 text-center md:text-right">
+              <p className="text-xs text-muted tracking-wide mb-3 text-right">
                 Live preview — what lands in my inbox
               </p>
 

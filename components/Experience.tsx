@@ -48,15 +48,16 @@ const flights: Flight[] = [
   },
 ];
 
-// Single flipping character cell
+// Single flipping character cell with instant fallback
 function FlapChar({ target, delay, trigger }: { target: string; delay: number; trigger: boolean }) {
-  const [display, setDisplay] = useState(" ");
+  // Initialize with target character so content is NEVER invisible
+  const [display, setDisplay] = useState(target === " " ? "\u00A0" : target);
   const [flipKey, setFlipKey] = useState(0);
 
   useEffect(() => {
     if (!trigger) return;
     let cancelled = false;
-    const flips = 6 + Math.floor(Math.random() * 5);
+    const flips = 5 + Math.floor(Math.random() * 4);
     let count = 0;
 
     const start = setTimeout(() => {
@@ -82,14 +83,14 @@ function FlapChar({ target, delay, trigger }: { target: string; delay: number; t
   }, [trigger, target, delay]);
 
   return (
-    <span className="relative inline-block w-[0.62em] sm:w-[0.66em] h-[1.2em] overflow-hidden text-center align-top">
+    <span className="relative inline-block w-[0.58em] sm:w-[0.66em] h-[1.2em] overflow-hidden text-center align-top shrink-0">
       <span
         key={flipKey}
         className="absolute inset-0 flex items-center justify-center animate-[flap_0.12s_ease-out]"
       >
         {display}
       </span>
-      <span className="absolute left-0 right-0 top-1/2 h-px bg-black/40" />
+      <span className="absolute left-0 right-0 top-1/2 h-px bg-white/10 pointer-events-none" />
     </span>
   );
 }
@@ -106,7 +107,7 @@ function FlapText({
   stagger?: number;
 }) {
   return (
-    <span className={`font-mono tracking-wider whitespace-nowrap ${className}`}>
+    <span className={`font-mono tracking-wider whitespace-nowrap inline-flex ${className}`}>
       {text.split("").map((ch, i) => (
         <FlapChar key={i} target={ch} delay={i * stagger} trigger={trigger} />
       ))}
@@ -117,16 +118,35 @@ function FlapText({
 function useInView() {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
+  
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el) {
+      setInView(true);
+      return;
+    }
+    
+    // Fallback timer if IntersectionObserver fails on mobile webview
+    const fallbackTimer = setTimeout(() => setInView(true), 1000);
+
     const obs = new IntersectionObserver(
-      ([e]) => e.isIntersecting && (setInView(true), obs.disconnect()),
-      { threshold: 0.25 }
+      ([e]) => {
+        if (e.isIntersecting) {
+          setInView(true);
+          clearTimeout(fallbackTimer);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0, rootMargin: "50px" }
     );
+
     obs.observe(el);
-    return () => obs.disconnect();
+    return () => {
+      clearTimeout(fallbackTimer);
+      obs.disconnect();
+    };
   }, []);
+
   return { ref, inView };
 }
 
@@ -146,9 +166,9 @@ export default function Experience() {
     <section
       id="experience"
       ref={sectionRef}
-      className="relative py-28 px-4 sm:px-6 bg-background overflow-hidden"
+      className="relative py-16 sm:py-28 px-3 sm:px-6 bg-background overflow-hidden"
     >
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[500px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[500px] bg-amber-500/5 blur-[150px] rounded-full pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto">
         <SectionHeader num="06" tag="Experience" title="Career Departures" />
@@ -159,17 +179,17 @@ export default function Experience() {
           <div className="flex items-center justify-between px-4 sm:px-6 py-3 bg-black/40 border-b border-white/10">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-[pulse-dot_2s_infinite]" />
-              <span className="text-[11px] text-muted font-mono tracking-widest">
+              <span className="text-[10px] sm:text-[11px] text-neutral-400 font-mono tracking-widest">
                 DEPARTURES — CAREER TIMELINE
               </span>
             </div>
-            <span className="text-[11px] text-accent font-mono tabular-nums hidden sm:block">
+            <span className="text-[11px] text-amber-500 font-mono tabular-nums">
               {time}
             </span>
           </div>
 
           {/* Column labels */}
-          <div className="hidden sm:grid grid-cols-[100px_1fr_1fr_140px_28px] gap-4 px-6 py-3 text-[10px] text-muted/60 tracking-widest border-b border-white/10 font-mono">
+          <div className="hidden sm:grid grid-cols-[100px_1fr_1fr_140px_28px] gap-4 px-6 py-3 text-[10px] text-neutral-500 tracking-widest border-b border-white/10 font-mono">
             <span>CODE</span>
             <span>ROLE</span>
             <span>ORGANIZATION</span>
@@ -187,30 +207,52 @@ export default function Experience() {
                     onClick={() => setOpenIndex(isOpen ? null : i)}
                     className="w-full text-left px-4 sm:px-6 py-4 sm:py-5 hover:bg-white/[0.02] transition-colors duration-300"
                   >
-                    <div className="grid grid-cols-2 sm:grid-cols-[100px_1fr_1fr_140px_28px] gap-x-4 gap-y-2 items-center">
-                      <div className="col-span-2 sm:col-span-1">
-                        <FlapText text={f.code} trigger={inView} className="text-accent text-sm" stagger={10} />
+                    <div className="flex flex-col sm:grid sm:grid-cols-[100px_1fr_1fr_140px_28px] gap-2 sm:gap-4 items-start sm:items-center relative pr-6 sm:pr-0">
+                      
+                      {/* Mobile Code & Status Top Bar */}
+                      <div className="flex items-center justify-between w-full sm:w-auto">
+                        <FlapText text={f.code} trigger={inView} className="text-amber-500 text-xs sm:text-sm" stagger={10} />
+                        
+                        <div className="flex items-center gap-2 sm:hidden">
+                          {f.live && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-[pulse-dot_1.5s_infinite]" />
+                          )}
+                          <FlapText
+                            text={f.status}
+                            trigger={inView}
+                            className={`text-[11px] ${f.live ? "text-green-400" : "text-neutral-400"}`}
+                            stagger={8}
+                          />
+                        </div>
                       </div>
-                      <div className="col-span-2 sm:col-span-1">
-                        <FlapText text={f.role} trigger={inView} className="text-text text-sm sm:text-base" stagger={6} />
+
+                      {/* Role */}
+                      <div className="overflow-x-auto max-w-full no-scrollbar">
+                        <FlapText text={f.role} trigger={inView} className="text-white text-xs sm:text-base" stagger={6} />
                       </div>
-                      <div className="col-span-2 sm:col-span-1">
-                        <FlapText text={f.org} trigger={inView} className="text-muted text-xs sm:text-sm" stagger={5} />
+
+                      {/* Organization */}
+                      <div className="overflow-x-auto max-w-full no-scrollbar">
+                        <FlapText text={f.org} trigger={inView} className="text-neutral-400 text-[11px] sm:text-sm" stagger={5} />
                       </div>
-                      <div className="flex items-center gap-2 col-span-1">
+
+                      {/* Desktop Status */}
+                      <div className="hidden sm:flex items-center gap-2">
                         {f.live && (
                           <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-[pulse-dot_1.5s_infinite]" />
                         )}
                         <FlapText
                           text={f.status}
                           trigger={inView}
-                          className={`text-xs sm:text-sm ${f.live ? "text-green-400" : "text-muted"}`}
+                          className={`text-xs sm:text-sm ${f.live ? "text-green-400" : "text-neutral-400"}`}
                           stagger={8}
                         />
                       </div>
+
+                      {/* Dropdown Chevron */}
                       <motion.div
                         animate={{ rotate: isOpen ? 180 : 0 }}
-                        className="justify-self-end text-muted"
+                        className="absolute right-0 top-1 sm:relative sm:top-0 sm:justify-self-end text-neutral-400"
                       >
                         <ChevronDown size={16} />
                       </motion.div>
@@ -226,7 +268,7 @@ export default function Experience() {
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="overflow-hidden bg-black/20"
                       >
-                        <p className="px-4 sm:px-6 pb-5 pt-1 text-sm text-muted leading-relaxed max-w-2xl">
+                        <p className="px-4 sm:px-6 pb-5 pt-1 text-xs sm:text-sm text-neutral-300 leading-relaxed max-w-2xl">
                           {f.desc}
                         </p>
                       </motion.div>
@@ -239,10 +281,10 @@ export default function Experience() {
 
           {/* Footer strip */}
           <div className="px-4 sm:px-6 py-3 bg-black/40 border-t border-white/10 flex items-center justify-between">
-            <span className="text-[10px] text-muted/50 font-mono tracking-widest">
+            <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono tracking-widest">
               {flights.length} ENTRIES LOGGED
             </span>
-            <span className="text-[10px] text-muted/50 font-mono tracking-widest">
+            <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono tracking-widest">
               TAP A ROW FOR DETAILS
             </span>
           </div>

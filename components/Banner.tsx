@@ -35,8 +35,8 @@ export default function CTA() {
   };
 
   return (
-    <section id="contact" ref={ref} className="relative py-28 px-6 bg-background overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/10 blur-[140px] rounded-full pointer-events-none" />
+    <section id="contact-cta" ref={ref} className="hidden md:block relative py-28 px-6 bg-background overflow-hidden">
+      <div className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/10 blur-[140px] rounded-full pointer-events-none" />
 
       <div
         className="relative max-w-6xl mx-auto text-center"

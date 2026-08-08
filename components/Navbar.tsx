@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { useLenisScroll } from "./LenisProvider";
 
-const navLinks = [
+interface NavItem {
+  name: string;
+  href: string;
+}
+
+const navLinks: NavItem[] = [
   { name: "About", href: "#about" },
   { name: "Work", href: "#work" },
   { name: "Blogs", href: "#blogs" },
@@ -12,276 +16,212 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [reduceMotion, setReduceMotion] = useState(false);
-  const lenisScroll = useLenisScroll();
+  // Default to empty so nothing is active initially
+  const [activeSection, setActiveSection] = useState<string>("");
+  const sectionIds = ["about", "work", "blogs", "skills", "contact"];
 
+  // Track scroll position for header glassmorphism
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const handleScroll = () => setScrolled(window.scrollY > 30);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Respect reduced motion preference
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-      setReduceMotion(mq.matches);
-      const handler = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
-      if (mq.addEventListener) mq.addEventListener("change", handler);
-      else mq.addListener(handler);
-      return () => {
-        if (mq.removeEventListener) mq.removeEventListener("change", handler);
-        else mq.removeListener(handler);
-      };
-    } catch {
-      return;
-    }
-  }, []);
-
-  // Active section highlighting
+  // Resolve the section based on document order and scroll position so the
+  // visible section wins even when sticky content is present.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const ids = navLinks.map((l) => l.href.replace(/^#/, "")).concat(["contact"]);
-    const sections = ids
-      .map((id) => document.getElementById(id))
-      .filter(Boolean) as HTMLElement[];
 
-    if (!sections.length) return;
+    const updateActiveSection = () => {
+      let nextActive = "";
+      let bestVisibleHeight = 0;
 
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      { root: null, rootMargin: "-30% 0px -50% 0px", threshold: 0.15 }
-    );
+      for (const id of sectionIds) {
+        const element = document.getElementById(id);
+        if (!element) continue;
 
-    sections.forEach((s) => obs.observe(s));
-    return () => obs.disconnect();
-  }, []);
+        const rect = element.getBoundingClientRect();
 
-  // Close mobile menu with Escape
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
+        const visibleTop = Math.max(rect.top, 0);
+        const visibleBottom = Math.min(rect.bottom, window.innerHeight);
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
 
-  const handleNavClick = (e: any, href: string) => {
-    if (!href.startsWith("#")) return;
-    const id = href.slice(1);
-    const el = document.getElementById(id);
-    if (el) {
-      e.preventDefault();
-      if (reduceMotion) {
-        el.scrollIntoView({ behavior: "auto", block: "start" });
-      } else {
-        lenisScroll?.scrollToTarget(el);
+        if (visibleHeight > bestVisibleHeight) {
+          bestVisibleHeight = visibleHeight;
+          nextActive = id;
+        }
       }
-      setIsOpen(false);
-      // update active immediately
+
+      setActiveSection(nextActive);
+    };
+
+    updateActiveSection();
+
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+    };
+  }, []);
+
+  // Smooth scroll click handler
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (!href.startsWith("#")) return;
+    e.preventDefault();
+    const id = href.slice(1);
+    const targetElement = document.getElementById(id);
+
+    if (targetElement) {
+      targetElement.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
       setActiveSection(id);
     }
-  };
+  }, []);
+
+  // Scroll to top on logo click
+  const handleLogoClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    setActiveSection("");
+  }, []);
 
   return (
-    <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b ${
-        scrolled
-          ? "bg-background/95 backdrop-blur-lg border-white/10 shadow-[0_6px_40px_rgba(0,0,0,0.45)]"
-          : "bg-background/60 backdrop-blur-md border-white/6 shadow-[0_6px_30px_rgba(10,10,10,0.25)]"
-      }`}
-    >
-      <nav
-        className={`max-w-6xl mx-auto flex items-center justify-between px-6 transition-all duration-500 ${
-          scrolled ? "py-3" : "py-5"
-        }`}
-      >
-        {/* LHS: Animated Logo with glow */}
-        <Link href="/" className="relative shrink-0 group">
-          <span className="absolute -inset-4 rounded-full bg-accent/30 blur-xl opacity-60 animate-[glow-pulse_3s_ease-in-out_infinite] group-hover:opacity-90 transition-opacity" />
-          <svg
-            width="110"
-            height="40"
-            viewBox="0 0 110 40"
-            className="relative overflow-visible"
-          >
-            <text
-              x="0"
-              y="28"
-              fontSize="26"
-              fontWeight="700"
-              fill="#FF7A00"
-              fillOpacity="0"
-              stroke="#FF7A00"
-              strokeWidth="1"
-              strokeDasharray="300"
-              strokeDashoffset="300"
-              className="transition-all duration-300 group-hover:fill-[#FFA733]"
-              style={{
-                animation:
-                  "draw-logo 2s ease forwards, fill-logo 0.6s ease forwards 1.8s",
-              }}
-            >
-              Ahmed
-            </text>
-          </svg>
-        </Link>
+    <>
+      {/* ---------------- STATIC MOBILE TOP BAR (Logo + WhatsApp) ---------------- */}
+      <div className="md:hidden fixed top-0 left-0 w-full z-40 px-4 pt-4 pointer-events-none">
+        <div className="max-w-md mx-auto flex items-center justify-between pointer-events-auto bg-neutral-950/70 backdrop-blur-xl border border-white/10 px-5 py-2.5 rounded-full shadow-lg">
+          {/* Logo */}
+          <a href="#" onClick={handleLogoClick} className="flex items-center gap-1.5">
+            <span className="font-black text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-400 to-orange-400">
+              AHMED
+            </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_8px_#FF7A00]" />
+          </a>
 
-        {/* Center: Nav links (desktop only) */}
-        <ul className="hidden md:flex items-center gap-10 absolute left-1/2 -translate-x-1/2">
-          {navLinks.map((link, i) => {
-            const id = link.href.replace(/^#/, "");
-            const isActive = activeSection === id;
-            return (
-              <li
-                key={link.name}
-                className="opacity-0"
-                style={{
-                  animation: reduceMotion ? undefined : `fade-in-down 0.6s ease forwards ${0.15 * i + 0.3}s`,
-                }}
-              >
-                <Link
-                  href={link.href}
-                  onClick={(e) => handleNavClick(e as any, link.href)}
-                  aria-current={isActive ? "page" : undefined}
-                  className={`relative text-sm transition-colors duration-300 tracking-wide group/link py-1 ${
-                    isActive ? "text-accent" : "text-muted hover:text-hover"
-                  }`}
-                >
-                  {link.name}
-                  <span className={`absolute left-0 -bottom-0.5 h-[1.5px] w-full bg-accent origin-center transition-transform duration-300 ease-out ${isActive ? "scale-x-100" : "scale-x-0 group-hover/link:scale-x-100"}`} />
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-
-        {/* RHS: Contact + WhatsApp CTAs (desktop) */}
-        <div className="hidden md:flex items-center gap-3">
-          {/* WhatsApp first (desktop): icon + theme text */}
+          {/* Quick WhatsApp Action */}
           <a
             href="https://wa.me/923113115428"
             target="_blank"
             rel="noopener noreferrer"
-            className="relative overflow-hidden inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold text-sm px-3 py-2 rounded-full transition-colors duration-300 opacity-0 shadow-[0_8px_30px_rgba(37,211,102,0.15)] hover:shadow-[0_10px_40px_rgba(37,211,102,0.2)] hover:scale-105"
-            style={{ animation: reduceMotion ? undefined : "fade-in-down 0.6s ease forwards 0.7s" }}
-            aria-label="Message on WhatsApp"
+            className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#25D366] bg-[#25D366]/10 border border-[#25D366]/30 px-3 py-1.5 rounded-full shadow-[0_0_12px_rgba(37,211,102,0.15)] active:scale-95 transition-all"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="flex-none">
-              <path d="M21 11.5a8.5 8.5 0 10-9.3 8.36L3 21l1.14-4.02A8.5 8.5 0 0021 11.5z" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" opacity="0.12" />
-              <path d="M17.5 14.25c-.45 0-1.12-.24-1.93-.52-.5-.18-1.02-.4-1.43-.55-.4-.15-.74-.24-1.03.21-.28.44-1.09 1.52-1.33 1.83-.24.31-.47.35-.97.12-.5-.24-2.1-.77-3.98-2.46C5.46 12.74 4.6 10.9 4.6 9.68c0-1.22.55-1.81.75-2.06.2-.25.5-.31.75-.31.24 0 .47 0 .67.01.22.02.52-.08.8.6.28.68.94 2.35 1.02 2.52.08.18.13.4-.08.64-.2.24-.36.55-.52.82-.16.28-.33.6-.15.96.18.36 1.02 1.66 2.2 2.85 1.51 1.5 2.77 2.05 3.19 2.29.42.25.67.22.92.13.24-.09.78-.31 1.12-.56.34-.25.55-.44.62-.68.07-.24.07-.45.05-.54-.02-.09-.18-.15-.42-.24-.24-.09-1.41-.58-1.64-.65-.23-.07-.38-.11-.55.07-.17.18-.66.64-.8.77-.14.13-.28.14-.5.05z" fill="white" />
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M20.52 3.48A11.58 11.58 0 0 0 12.01 0C5.39 0 .01 5.37.01 11.99c0 2.11.55 4.17 1.6 6.01L0 24l6.13-1.58a11.95 11.95 0 0 0 5.86 1.49h.01c6.62 0 12-5.38 12-12 0-3.21-1.25-6.22-3.48-8.43Zm-8.51 18.45h-.01a9.86 9.86 0 0 1-5.02-1.37l-.36-.21-3.64.94.97-3.54-.24-.37a9.85 9.85 0 0 1-1.51-5.23c0-5.44 4.43-9.87 9.88-9.87 2.64 0 5.13 1.03 7 2.9a9.83 9.83 0 0 1 2.9 7c0 5.44-4.43 9.75-9.97 9.75Z" fill="currentColor" />
+              <path d="M17.12 14.56c-.29-.15-1.71-.85-1.98-.94-.27-.1-.46-.15-.66.15s-.76.94-.93 1.13-.34.22-.63.07a8.1 8.1 0 0 1-2.38-1.47 8.96 8.96 0 0 1-1.65-2.05c-.17-.29-.02-.45.13-.6.13-.13.29-.34.43-.5.15-.17.2-.29.3-.48.1-.2.05-.37-.02-.52-.07-.15-.66-1.59-.91-2.18-.24-.58-.49-.5-.66-.5h-.56c-.2 0-.52.07-.79.37-.27.29-1.03 1.01-1.03 2.47s1.05 2.87 1.2 3.07c.15.2 2.06 3.15 4.99 4.4.7.3 1.24.48 1.66.62.7.22 1.34.19 1.84.12.56-.08 1.71-.7 1.95-1.38.24-.68.24-1.26.17-1.38-.08-.12-.27-.2-.56-.35Z" fill="#fff" />
             </svg>
-            <span className="relative z-10 text-xs uppercase tracking-wider">WhatsApp</span>
-            <span className="absolute top-0 left-0 h-full w-1/3 bg-white/10 blur-sm animate-[shine-sweep_3s_ease-in-out_infinite]" />
+            <span>WhatsApp</span>
           </a>
-
-          <Link
-            href="#contact"
-            onClick={(e) => handleNavClick(e as any, "#contact")}
-            className={`relative overflow-hidden items-center bg-accent hover:bg-hover text-background font-semibold text-sm px-4 py-2 rounded-full transition-colors duration-300 opacity-0 shadow-[0_0_20px_rgba(255,122,0,0.35)] hover:shadow-[0_0_28px_rgba(255,167,51,0.55)] hover:scale-105 ${
-              activeSection === "contact" ? "ring-2 ring-accent/30" : ""
-            }`}
-            style={{ animation: reduceMotion ? undefined : "fade-in-down 0.6s ease forwards 0.85s" }}
-          >
-            <span className="relative z-10">Contact</span>
-            <span className="absolute top-0 left-0 h-full w-1/3 bg-white/40 blur-md animate-[shine-sweep_3s_ease-in-out_infinite]" />
-          </Link>
         </div>
-
-        {/* Mobile: Hamburger */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden flex flex-col gap-1.5 z-50"
-          aria-label="Toggle menu"
-        >
-          <span
-            className={`block h-0.5 w-6 bg-text transition-transform duration-300 ${
-              isOpen ? "rotate-45 translate-y-2" : ""
-            }`}
-          />
-          <span
-            className={`block h-0.5 w-6 bg-text transition-opacity duration-300 ${
-              isOpen ? "opacity-0" : ""
-            }`}
-          />
-          <span
-            className={`block h-0.5 w-6 bg-text transition-transform duration-300 ${
-              isOpen ? "-rotate-45 -translate-y-2" : ""
-            }`}
-          />
-        </button>
-      </nav>
-
-      {/* Mobile menu overlay */}
-      <div
-        className={`md:hidden fixed inset-0 bg-background/98 backdrop-blur-md flex flex-col items-center justify-center gap-8 transition-all duration-300 ${
-          isOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
-      >
-        {navLinks.map((link, i) => (
-          <Link
-            key={link.name}
-            href={link.href}
-            onClick={(e) => {
-              handleNavClick(e as any, link.href);
-            }}
-            className="text-2xl text-text hover:text-accent transition-all duration-300"
-            style={
-              isOpen
-                ? { animation: reduceMotion ? undefined : `fade-in-down 0.4s ease forwards ${0.1 * i}s` }
-                : { opacity: 0 }
-            }
-          >
-            {link.name}
-          </Link>
-        ))}
-
-        {/* Mobile: WhatsApp first */}
-        <a
-          href="https://wa.me/923113115428"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => setIsOpen(false)}
-          className="inline-flex items-center gap-3 bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold px-6 py-3 rounded-full transition-colors duration-300 mt-4 shadow-[0_10px_30px_rgba(37,211,102,0.12)]"
-          style={
-            isOpen
-              ? { animation: reduceMotion ? undefined : "fade-in-down 0.4s ease forwards 0.45s" }
-              : { opacity: 0 }
-          }
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-none">
-            <path d="M21 11.5a8.5 8.5 0 10-9.3 8.36L3 21l1.14-4.02A8.5 8.5 0 0021 11.5z" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" opacity="0.12" />
-            <path d="M17.5 14.25c-.45 0-1.12-.24-1.93-.52-.5-.18-1.02-.4-1.43-.55-.4-.15-.74-.24-1.03.21-.28.44-1.09 1.52-1.33 1.83-.24.31-.47.35-.97.12-.5-.24-2.1-.77-3.98-2.46C5.46 12.74 4.6 10.9 4.6 9.68c0-1.22.55-1.81.75-2.06.2-.25.5-.31.75-.31.24 0 .47 0 .67.01.22.02.52-.08.8.6.28.68.94 2.35 1.02 2.52.08.18.13.4-.08.64-.2.24-.36.55-.52.82-.16.28-.33.6-.15.96.18.36 1.02 1.66 2.2 2.85 1.51 1.5 2.77 2.05 3.19 2.29.42.25.67.22.92.13.24-.09.78-.31 1.12-.56.34-.25.55-.44.62-.68.07-.24.07-.45.05-.54-.02-.09-.18-.15-.42-.24-.24-.09-1.41-.58-1.64-.65-.23-.07-.38-.11-.55.07-.17.18-.66.64-.8.77-.14.13-.28.14-.5.05z" fill="white" />
-          </svg>
-          <span className="text-sm">WhatsApp</span>
-        </a>
-
-        <Link
-          href="#contact"
-          onClick={() => setIsOpen(false)}
-          className="bg-accent hover:bg-hover text-background font-semibold px-6 py-3 rounded-full transition-colors duration-300 mt-2 shadow-[0_0_20px_rgba(255,122,0,0.4)]"
-          style={
-            isOpen
-              ? { animation: reduceMotion ? undefined : "fade-in-down 0.4s ease forwards 0.55s" }
-              : { opacity: 0 }
-          }
-        >
-          Contact
-        </Link>
       </div>
-    </header>
+
+      {/* ---------------- DESKTOP NAVBAR ---------------- */}
+      <header className="hidden md:block fixed top-0 left-0 w-full z-50 pt-4 px-6 transition-all duration-300">
+        <div
+          className={`max-w-6xl mx-auto rounded-full transition-all duration-500 border ${
+            scrolled
+              ? "bg-neutral-950/80 backdrop-blur-xl border-white/15 py-2.5 px-6 shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
+              : "bg-neutral-900/40 backdrop-blur-md border-white/10 py-3.5 px-6 shadow-lg"
+          }`}
+        >
+          <nav className="flex items-center justify-between">
+            {/* Logo */}
+            <a href="#" onClick={handleLogoClick} className="relative z-50 flex items-center gap-2 group">
+              <span className="font-black text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-400 to-orange-400">
+                AHMED
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_8px_#FF7A00]" />
+            </a>
+
+            {/* Nav Items */}
+            <ul className="flex items-center gap-1 bg-white/[0.04] border border-white/10 px-3 py-1.5 rounded-full">
+              {navLinks.map((link) => {
+                const id = link.href.replace(/^#/, "");
+                const isActive = activeSection === id;
+
+                return (
+                  <li key={link.name} className="relative">
+                    <Link
+                      href={link.href}
+                      onClick={(e) => handleNavClick(e, link.href)}
+                      className={`relative z-10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest transition-colors duration-200 block ${
+                        isActive ? "text-black" : "text-neutral-400 hover:text-white"
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                    {isActive && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-amber-400 rounded-full z-0 transition-all duration-300" />
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* Desktop CTAs */}
+            <div className="flex items-center gap-3">
+              <a
+                href="https://wa.me/923113115428"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#25D366] hover:text-white border border-[#25D366]/30 hover:border-[#25D366] hover:bg-[#25D366] px-4 py-2 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(37,211,102,0.15)]"
+              >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M20.52 3.48A11.58 11.58 0 0 0 12.01 0C5.39 0 .01 5.37.01 11.99c0 2.11.55 4.17 1.6 6.01L0 24l6.13-1.58a11.95 11.95 0 0 0 5.86 1.49h.01c6.62 0 12-5.38 12-12 0-3.21-1.25-6.22-3.48-8.43Zm-8.51 18.45h-.01a9.86 9.86 0 0 1-5.02-1.37l-.36-.21-3.64.94.97-3.54-.24-.37a9.85 9.85 0 0 1-1.51-5.23c0-5.44 4.43-9.87 9.88-9.87 2.64 0 5.13 1.03 7 2.9a9.83 9.83 0 0 1 2.9 7c0 5.44-4.43 9.75-9.97 9.75Z" fill="currentColor" />
+                      <path d="M17.12 14.56c-.29-.15-1.71-.85-1.98-.94-.27-.1-.46-.15-.66.15s-.76.94-.93 1.13-.34.22-.63.07a8.1 8.1 0 0 1-2.38-1.47 8.96 8.96 0 0 1-1.65-2.05c-.17-.29-.02-.45.13-.6.13-.13.29-.34.43-.5.15-.17.2-.29.3-.48.1-.2.05-.37-.02-.52-.07-.15-.66-1.59-.91-2.18-.24-.58-.49-.5-.66-.5h-.56c-.2 0-.52.07-.79.37-.27.29-1.03 1.01-1.03 2.47s1.05 2.87 1.2 3.07c.15.2 2.06 3.15 4.99 4.4.7.3 1.24.48 1.66.62.7.22 1.34.19 1.84.12.56-.08 1.71-.7 1.95-1.38.24-.68.24-1.26.17-1.38-.08-.12-.27-.2-.56-.35Z" fill="#fff" />
+                    </svg>
+                <span>WhatsApp</span>
+              </a>
+
+              <Link
+                href="#contact"
+                onClick={(e) => handleNavClick(e, "#contact")}
+                className={`text-xs font-bold uppercase tracking-wider px-5 py-2 rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(255,122,0,0.4)] active:scale-95 ${
+                  activeSection === "contact"
+                    ? "text-black bg-gradient-to-r from-orange-500 to-amber-400"
+                    : "text-black bg-gradient-to-r from-orange-500 to-amber-400 hover:brightness-110"
+                }`}
+              >
+                Contact
+              </Link>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      {/* ---------------- REDESIGNED MOBILE BOTTOM DOCK ---------------- */}
+      <div className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-sm">
+        <nav className="bg-neutral-950/90 backdrop-blur-2xl border border-white/15 p-1.5 rounded-full shadow-[0_15px_35px_rgba(0,0,0,0.9)] flex items-center justify-between gap-1">
+          {navLinks.map((link) => {
+            const id = link.href.replace(/^#/, "");
+            const isActive = activeSection === id;
+
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
+                className={`relative flex-1 text-center py-2.5 text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 rounded-full ${
+                  isActive ? "text-black shadow-[0_0_15px_rgba(255,122,0,0.4)]" : "text-neutral-400 hover:text-white"
+                }`}
+              >
+                <span className="relative z-10">{link.name}</span>
+                {isActive && (
+                  <span className="absolute inset-0 bg-gradient-to-r from-orange-500 to-amber-400 rounded-full z-0" />
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+    </>
   );
 }
