@@ -78,7 +78,7 @@ export default function Hero() {
       ref={sectionRef}
       onMouseMove={handleMouseMove}
       id="home"
-      className="relative w-full max-w-full overflow-x-hidden min-h-[100vh] md:min-h-[50vh] lg:min-h-[70vh] 2xl:min-h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24 pb-12 lg:pt-20 lg:pb-8"
+      className="relative w-full max-w-full overflow-x-hidden min-h-[40vh] md:min-h-[50vh] lg:min-h-[65vh] xl:min-h-[40vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-28 pb-12 sm:pt-32 lg:pt-28 lg:pb-8"
       style={{
         background: `radial-gradient(600px circle at ${mouse.x}% ${mouse.y}%, rgba(255,122,0,0.12), transparent 70%), #0B0B0C`,
       }}
@@ -91,9 +91,9 @@ export default function Hero() {
             "radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)",
           backgroundSize: "30px 30px",
           maskImage:
-            "radial-gradient(ellipse 75% 55% at 50% 40%, black 30%, transparent 100%)",
+            "radial-gradient(ellipse 100% 80% at 50% 30%, black 40%, transparent 100%)",
           WebkitMaskImage:
-            "radial-gradient(ellipse 75% 55% at 50% 40%, black 30%, transparent 100%)",
+            "radial-gradient(ellipse 100% 80% at 50% 30%, black 40%, transparent 100%)",
         }}
       />
 

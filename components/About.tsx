@@ -121,7 +121,7 @@ export default function ServicesScrollPinned() {
   return (
     <section id="about" className="relative bg-background">
       {/* MOBILE LAYOUT (< lg) */}
-      <div className="block lg:hidden py-12 px-4 sm:px-6">
+      <div className="block lg:hidden py-12 px-4 md:px-6">
         <div className="mb-8">
           <SectionHeader num="02" tag="Capabilities" title="What I Build" />
         </div>
@@ -209,9 +209,9 @@ export default function ServicesScrollPinned() {
 
       {/* DESKTOP LAYOUT (>= lg) */}
       <div ref={containerRef} className="hidden lg:block relative h-[300vh]">
-        <div className="sticky top-0 h-screen flex flex-col justify-center px-6 overflow-hidden">
+        <div className="sticky top-0 h-screen 2xl:h-[60vh] flex flex-col justify-center px-6 overflow-hidden">
           {/* Ambient Glow */}
-          <div className="absolute top-1/2 right-10 -translate-y-1/2 w-[550px] h-[550px] bg-accent/5 blur-[170px] rounded-full pointer-events-none" />
+          <div className="absolute top-1/2 right-10 -translate-y-1/2 w-[550px] h-[550px]  bg-accent/5 blur-[170px] rounded-full pointer-events-none" />
 
           <div className="max-w-6xl mx-auto w-full relative z-10">
             {/* Section Header */}

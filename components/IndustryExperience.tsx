@@ -144,7 +144,7 @@ export default function StackedImageGallery() {
       </div>
 
       {/* Stacked Cards Track */}
-      <div className="relative">
+      <div className="relative 2xl:-mt-88">
         {projects.map((project, idx) => (
           <ImageCard
             key={project.id}

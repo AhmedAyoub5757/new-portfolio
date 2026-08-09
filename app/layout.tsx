@@ -12,7 +12,7 @@ export default function RootLayout({
       <body>
         <LenisProvider>
           <Navbar />
-          <main className="pt-20">{children}</main>
+          <main>{children}</main>
         </LenisProvider>
       </body>
     </html>

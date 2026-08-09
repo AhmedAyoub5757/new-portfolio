@@ -135,7 +135,7 @@ export default function HowIBuildFilmstrip() {
 
       {/* DESKTOP LAYOUT (>= md) */}
       <div ref={containerRef} className="hidden md:block relative h-[450vh]">
-        <div className="sticky top-0 h-screen flex flex-col justify-between py-12 overflow-hidden">
+        <div className="sticky top-0 h-screen 2xl:h-[50vh] flex flex-col justify-between py-12 overflow-hidden">
           <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 blur-[200px] rounded-full pointer-events-none" />
 
           <div className="max-w-7xl mx-auto w-full px-6 relative z-10 flex flex-col gap-6">
