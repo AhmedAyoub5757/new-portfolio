@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ArrowUp } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowUp, Sparkles, Heart, Copy, Check } from "lucide-react";
 
 const quickLinks = [
-  { label: "About", href: "#about" },
-  { label: "Work", href: "#work" },
-  { label: "Experience", href: "#experience" },
-  { label: "Contact", href: "#contact" },
+  { label: "About", href: "#about", desc: "Background & Bio" },
+  { label: "Work", href: "#work", desc: "Featured Projects" },
+  { label: "Experience", href: "#experience", desc: "Career Journey" },
+  { label: "Contact", href: "#contact", desc: "Get In Touch" },
 ];
 
 const icons = {
@@ -44,6 +44,7 @@ const socials = [
 export default function Footer() {
   const bigTextRef = useRef<HTMLDivElement>(null);
   const [spot, setSpot] = useState({ x: 50, y: -20 });
+  const [copied, setCopied] = useState(false);
 
   const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = bigTextRef.current?.getBoundingClientRect();
@@ -56,115 +57,208 @@ export default function Footer() {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
-  return (
-    <footer className="relative bg-background overflow-hidden">
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
+  const copyEmail = () => {
+    navigator.clipboard.writeText("ahmed42.dev@gmail.com");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
-      <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-10">
-        {/* Flashlight big text */}
+  return (
+    <footer className="relative bg-[#0B0B0C] text-[#FFFFFF] overflow-hidden border-t border-white/[0.08] pt-24 pb-12 font-sans select-none">
+      {/* --- AMBIENT GLOW & GRID BACKGROUND --- */}
+      {/* 1. Large Corner Ambient Glowing Orbs */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#FF7A00]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#FFA733]/10 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* 2. Linear Gradient Grid Overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-15"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: "64px 64px",
+          maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)",
+          WebkitMaskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)",
+        }}
+      />
+
+      {/* 3. Subtle Animated Accent Beam */}
+      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#FF7A00] to-transparent opacity-40" />
+
+      <div className="relative max-w-6xl mx-auto px-6">
+        {/* HERO HEADING */}
         <div
           ref={bigTextRef}
           onMouseMove={handleMove}
           onMouseLeave={() => setSpot({ x: 50, y: -20 })}
-          className="relative select-none cursor-default mb-16 overflow-hidden"
+          className="relative cursor-default mb-20 group text-center md:text-left"
         >
-          <h2
-            className="text-[14vw] sm:text-[11vw] lg:text-[9rem] font-bold leading-none tracking-tight text-transparent"
-            style={{ WebkitTextStroke: "1px rgba(255,255,255,0.12)" }}
-          >
-            LET&apos;S TALK
-          </h2>
-          <h2
-            className="absolute inset-0 text-[14vw] sm:text-[11vw] lg:text-[9rem] font-bold leading-none tracking-tight text-accent pointer-events-none hidden md:block"
-            style={{
-              WebkitMaskImage: `radial-gradient(180px circle at ${spot.x}% ${spot.y}%, black 0%, transparent 80%)`,
-              maskImage: `radial-gradient(180px circle at ${spot.x}% ${spot.y}%, black 0%, transparent 80%)`,
-            }}
-          >
-            LET&apos;S TALK
-          </h2>
-        </div>
-
-        {/* Info grid */}
-        <div className="grid sm:grid-cols-3 gap-10 mb-14">
-          {/* Bio blurb */}
-          <div>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-hover flex items-center justify-center text-background font-bold text-sm mb-4">
-              A
-            </div>
-            <p className="text-sm text-muted leading-relaxed max-w-xs">
-              CS graduate and frontend developer building fast, thoughtful web
-              experiences — currently at Redbox Technologies.
-            </p>
+          <div className="flex items-center gap-2 mb-4 justify-center md:justify-start">
+            <span className="w-2 h-2 rounded-full bg-[#FF7A00] animate-ping" />
+            <span className="text-xs font-mono tracking-widest text-[#FF7A00] uppercase">
+              Next Step
+            </span>
           </div>
 
-          {/* Quick links */}
-          <div>
-            <p className="text-xs text-muted tracking-widest mb-4">QUICK LINKS</p>
-            <ul className="space-y-2.5">
+          <div className="relative inline-block w-full">
+            <h2
+              className="text-[12vw] sm:text-[10vw] lg:text-[7.5rem] font-black leading-[0.9] tracking-tighter text-transparent select-none"
+              style={{ WebkitTextStroke: "1px rgba(255, 255, 255, 0.2)" }}
+            >
+              LET&apos;S BUILD <br className="hidden sm:inline" />
+              TOGETHER<span className="text-[#FF7A00]">.</span>
+            </h2>
+
+            <h2
+              className="absolute inset-0 text-[12vw] sm:text-[10vw] lg:text-[7.5rem] font-black leading-[0.9] tracking-tighter text-[#FF7A00] pointer-events-none hidden md:block select-none"
+              style={{
+                WebkitMaskImage: `radial-gradient(280px circle at ${spot.x}% ${spot.y}%, black 0%, transparent 75%)`,
+                maskImage: `radial-gradient(280px circle at ${spot.x}% ${spot.y}%, black 0%, transparent 75%)`,
+              }}
+            >
+              LET&apos;S BUILD <br className="hidden sm:inline" />
+              TOGETHER.
+            </h2>
+          </div>
+        </div>
+
+        {/* Info Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-20">
+          {/* Bio Column */}
+          <div className="md:col-span-5 space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#161618] border border-white/10 flex items-center justify-center text-[#FF7A00] font-mono font-bold text-base shadow-sm">
+                A
+              </div>
+              <div>
+                <h3 className="text-[#FFFFFF] font-medium text-base">Ahmed Ayoub</h3>
+                <p className="text-xs text-[#A3A3A3]">Frontend Engineer</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-[#A3A3A3] leading-relaxed max-w-sm">
+              Computer Science graduate building fast, interactive web applications.
+              Currently engineering frontend interfaces at{" "}
+              <span className="text-[#FFFFFF] font-medium">Redbox Technologies</span>.
+            </p>
+
+            <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-[#161618] border border-emerald-500/30 text-xs text-emerald-400">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              Open for new opportunities
+            </div>
+          </div>
+
+          {/* Quick Links Column */}
+          <div className="md:col-span-3 space-y-4">
+            <p className="text-xs text-[#A3A3A3] uppercase tracking-widest font-mono">
+              Navigation
+            </p>
+            <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-sm text-text/80 hover:text-accent transition-colors duration-300"
+                    className="group flex items-baseline justify-between text-sm text-[#A3A3A3] hover:text-[#FFA733] transition-colors duration-200"
                   >
-                    {link.label}
+                    <span className="group-hover:translate-x-1 transition-transform duration-200">
+                      {link.label}
+                    </span>
+                    <span className="text-[10px] text-[#A3A3A3]/50 group-hover:text-[#FF7A00] transition-colors font-mono">
+                      {link.desc}
+                    </span>
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Contact + socials */}
-          <div>
-            <p className="text-xs text-muted tracking-widest mb-4">CONNECT</p>
-            <a
-              href="mailto:ahmed42.dev@gmail.com"
-              className="block text-sm text-text/80 hover:text-accent transition-colors duration-300 mb-1"
-            >
-              ahmed42.dev@gmail.com
-            </a>
-            <p className="text-sm text-muted mb-5">Karachi, Pakistan</p>
+          {/* Contact & Socials */}
+          <div className="md:col-span-4 space-y-4">
+            <p className="text-xs text-[#A3A3A3] uppercase tracking-widest font-mono">
+              Get In Touch
+            </p>
 
-            <div className="flex items-center gap-3">
-              {socials.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={s.label}
-                  className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-muted hover:text-accent hover:border-accent transition-colors duration-300"
-                >
-                  {s.icon}
-                </a>
-              ))}
+            <button
+              onClick={copyEmail}
+              className="w-full text-left p-4 rounded-2xl border border-white/10 bg-[#161618] hover:border-[#FF7A00]/50 transition-all duration-300 group relative overflow-hidden"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] text-[#A3A3A3] mb-0.5 font-mono">
+                    Direct Line
+                  </p>
+                  <p className="text-sm text-[#FFFFFF] font-mono group-hover:text-[#FFA733] transition-colors">
+                    ahmed42.dev@gmail.com
+                  </p>
+                </div>
+                <span className="text-[11px] font-mono px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[#A3A3A3] group-hover:border-[#FF7A00]/40 group-hover:text-[#FFFFFF] transition-all flex items-center gap-1.5">
+                  {copied ? (
+                    <>
+                      <Check size={12} className="text-emerald-400" /> Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={12} /> Copy
+                    </>
+                  )}
+                </span>
+              </div>
+            </button>
+
+            <div className="pt-2">
+              <p className="text-[10px] text-[#A3A3A3]/70 mb-3 font-mono tracking-wider">
+                LOCATION: KARACHI, PK (UTC+5)
+              </p>
+              <div className="flex items-center gap-2.5">
+                {socials.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.label}
+                    className="w-10 h-10 rounded-xl border border-white/10 bg-[#161618] flex items-center justify-center text-[#A3A3A3] hover:text-[#FFFFFF] hover:border-[#FF7A00] hover:bg-[#FF7A00]/10 transition-all duration-300"
+                  >
+                    {s.icon}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Separator */}
-        <div className="relative h-px bg-white/10 mb-8 overflow-hidden">
-          <div className="absolute inset-0 bg-accent" />
+        {/* Glowing Separator Line */}
+        <div className="relative h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8">
+          <div className="absolute left-1/2 -translate-x-1/2 -top-px w-24 h-[2px] bg-[#FF7A00] blur-[2px]" />
         </div>
 
-        {/* Bottom row */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-          <p className="text-sm text-muted order-2 sm:order-1">
-            © {new Date().getFullYear()} Ahmed. All rights reserved.
+        {/* Bottom Bar */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <p className="text-xs text-[#A3A3A3] font-mono order-2 md:order-1">
+            © {new Date().getFullYear()} AHMED AYOUB. ALL RIGHTS RESERVED.
           </p>
-          <p className="text-xs text-muted/60 order-3 sm:order-2">
-            Built with Next.js & Tailwind CSS
-          </p>
+
+          {/* <div className="order-3 md:order-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-[#161618] text-xs text-[#A3A3A3]">
+            <span>Designed & Engineered with</span>
+            <Heart size={11} className="text-red-500 fill-red-500 inline animate-pulse" />
+            <span>in Karachi</span>
+            <span className="w-1 h-1 rounded-full bg-[#FF7A00] ml-1" />
+            <Sparkles size={11} className="text-[#FF7A00]" />
+          </div> */}
+
           <button
             onClick={scrollToTop}
-            aria-label="Back to top"
-            className="order-1 sm:order-3 flex items-center gap-2 text-xs text-muted hover:text-accent transition-colors duration-300 group"
+            className="order-1 md:order-3 group relative inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-[#161618] hover:border-[#FF7A00]/50 hover:bg-[#FF7A00]/10 text-xs text-[#A3A3A3] hover:text-[#FFFFFF] transition-all duration-300"
           >
-            Back to top
-            <span className="w-7 h-7 rounded-full border border-white/10 group-hover:border-accent flex items-center justify-center transition-colors duration-300">
-              <ArrowUp size={12} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
-            </span>
+            <span>Back to top</span>
+            <div className="w-5 h-5 rounded-full bg-white/5 group-hover:bg-[#FF7A00] group-hover:text-[#0B0B0C] flex items-center justify-center transition-all duration-300">
+              <ArrowUp size={11} className="transition-transform duration-300 group-hover:-translate-y-0.5" />
+            </div>
           </button>
         </div>
       </div>

@@ -11,7 +11,7 @@ import Blogs from "@/components/Blogs";
 
 export default function Home() {
   return (
-    <div className="grid grid-cols-1 gap-y-24 sm:gap-y-28 lg:gap-y-32">
+    <div className="grid grid-cols-1 gap-y-4 md:gap-y-8 lg:gap-y-12">
       <Hero />
       <About />
       <HowIBuild />
