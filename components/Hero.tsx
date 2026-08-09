@@ -78,7 +78,7 @@ export default function Hero() {
       ref={sectionRef}
       onMouseMove={handleMouseMove}
       id="home"
-      className="relative w-full max-w-full overflow-x-hidden min-h-[40vh] md:min-h-[50vh] lg:min-h-[65vh] xl:min-h-[40vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-28 pb-12 sm:pt-32 lg:pt-28 lg:pb-8"
+      className="relative w-full max-w-full overflow-x-hidden min-h-[40vh] md:min-h-[70vh] lg:min-h-[75vh] xl:min-h-[40vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-28 pb-12 sm:pt-32 lg:pt-28 lg:pb-8"
       style={{
         background: `radial-gradient(600px circle at ${mouse.x}% ${mouse.y}%, rgba(255,122,0,0.12), transparent 70%), #0B0B0C`,
       }}
