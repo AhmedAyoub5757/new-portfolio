@@ -63,14 +63,100 @@ export default function ContactForm() {
       <div className="relative max-w-6xl mx-auto">
         <SectionHeader num="07" tag="Get In Touch" title="Send a Message" />
 
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+        {/* MOBILE DEDICATED LAYOUT (< md): 100% RELIABLE FORM & DIRECT CONTACT CARDS */}
+        <div className="block md:hidden space-y-6 relative z-10">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="flex items-center gap-2 text-xs text-muted tracking-wide mb-2 font-mono">
+                <User size={13} className="text-accent" /> YOUR NAME
+              </label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                placeholder="John Hastings"
+                className="w-full bg-card border border-white/10 rounded-xl px-4 py-3 text-sm text-text placeholder:text-muted/40 outline-none focus:border-accent"
+              />
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2 text-xs text-muted tracking-wide mb-2 font-mono">
+                <Mail size={13} className="text-accent" /> YOUR EMAIL
+              </label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => handleChange("email", e.target.value)}
+                placeholder="john@example.com"
+                className="w-full bg-card border border-white/10 rounded-xl px-4 py-3 text-sm text-text placeholder:text-muted/40 outline-none focus:border-accent"
+              />
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2 text-xs text-muted tracking-wide mb-2 font-mono">
+                <MessageSquare size={13} className="text-accent" /> MESSAGE
+              </label>
+              <textarea
+                value={form.message}
+                onChange={(e) => handleChange("message", e.target.value)}
+                rows={4}
+                placeholder="Tell me about your project, role, or just say hi..."
+                className="w-full resize-none bg-card border border-white/10 rounded-xl px-4 py-3 text-sm text-text placeholder:text-muted/40 outline-none focus:border-accent"
+              />
+            </div>
+
+            {error && <p className="text-xs text-red-400">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={!canSubmit || submitting || sent}
+              className="w-full inline-flex items-center justify-center gap-2 bg-accent hover:bg-hover disabled:opacity-50 text-background font-bold text-sm px-6 py-3.5 rounded-full shadow-[0_0_20px_rgba(255,122,0,0.3)] active:scale-95 transition-all"
+            >
+              {submitting ? "Sending..." : sent ? "Sent!" : "Send Message"}
+              <Send size={15} />
+            </button>
+          </form>
+
+          {/* Quick Contact Links on Mobile */}
+          <div className="space-y-3 pt-2 border-t border-white/10">
+            <div className="rounded-xl bg-card border border-white/10 p-4 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <Mail size={16} className="text-accent" />
+                <span className="text-xs font-mono text-white">ahmed42.dev@gmail.com</span>
+              </div>
+              <button
+                type="button"
+                onClick={copyEmail}
+                className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-[10px] font-mono text-text flex items-center gap-1"
+              >
+                {copied ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+                <span>{copied ? "Copied" : "Copy"}</span>
+              </button>
+            </div>
+
+            <a
+              href="https://wa.me/923113115428"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl bg-card border border-[#25D366]/30 p-4 flex items-center justify-between text-[#25D366]"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="text-xs font-bold font-mono">WhatsApp Instant Reply</span>
+              </div>
+              <ExternalLink size={14} />
+            </a>
+          </div>
+        </div>
+
+        {/* DESKTOP LAYOUT (>= md) */}
+        <div className="hidden md:grid md:grid-cols-2 gap-12 items-start">
           {/* LEFT: Compose form */}
           <motion.form
             onSubmit={handleSubmit}
             className="space-y-5"
             initial={{ opacity: 0, x: -32 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0 }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           >
             <div>
@@ -141,7 +227,7 @@ export default function ContactForm() {
             className="space-y-6"
             initial={{ opacity: 0, x: 32 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0 }}
             transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* Direct Channel 1: Email Copy Box */}

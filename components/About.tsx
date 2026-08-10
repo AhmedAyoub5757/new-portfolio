@@ -216,7 +216,7 @@ export default function ServicesScrollPinned() {
                   <motion.div
                     className="absolute top-0 left-0 w-full bg-accent"
                     style={{ height: activeRailHeight }}
-                  />
+                  />a
                 </div>
 
                 {/* List Items */}

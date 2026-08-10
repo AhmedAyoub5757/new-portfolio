@@ -78,7 +78,7 @@ export default function Hero() {
       ref={sectionRef}
       onMouseMove={handleMouseMove}
       id="home"
-      className="relative w-full max-w-full overflow-x-hidden min-h-[40vh] md:min-h-[70vh] lg:min-h-[75vh] xl:min-h-[40vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-28 pb-12 sm:pt-32 lg:pt-28 lg:pb-8"
+      className="relative w-full max-w-full overflow-x-hidden min-h-[40vh] md:min-h-[70vh] lg:min-h-[75vh] xl:min-h-[40vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 pb-12 sm:pt-32 lg:pt-28 lg:pb-8"
       style={{
         background: `radial-gradient(600px circle at ${mouse.x}% ${mouse.y}%, rgba(255,122,0,0.12), transparent 70%), #0B0B0C`,
       }}
@@ -128,7 +128,7 @@ export default function Hero() {
             </span>
           </h1>
 
-          <div className="hidden md:block min-h-[2rem] sm:min-h-[2.25rem] mb-4 lg:mb-3 flex items-center justify-center md:justify-start opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.4s]">
+          <div className="min-h-[2rem] sm:min-h-[2.25rem] mb-4 lg:mb-3 flex items-center justify-center md:justify-start opacity-0 animate-[fade-in-down_0.6s_ease_forwards_0.4s]">
             <span className="text-lg sm:text-2xl text-text font-medium inline-block">
               {displayText || "\u00A0"}
             </span>

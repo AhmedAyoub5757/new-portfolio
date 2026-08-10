@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 
 type Preset = "fadeUp" | "fadeIn" | "fadeLeft" | "fadeRight" | "scaleUp" | "stagger";
 
@@ -51,11 +51,23 @@ export default function ScrollReveal({
   children,
   preset = "fadeUp",
   delay = 0,
-  duration = 0.6,
+  duration = 0.5,
   className,
   once = true,
   threshold = 0.15,
 }: ScrollRevealProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsMobile(true);
+    }
+  }, []);
+
+  if (isMobile) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       initial="hidden"

@@ -71,29 +71,51 @@ export default function SkillsMarquee() {
   return (
     <section
       id="skills"
-      className="relative bg-background py-24 overflow-hidden flex flex-col justify-center min-h-[50vh]"
+      className="relative bg-background py-16 sm:py-24 overflow-hidden flex flex-col justify-center min-h-[40vh]"
     >
       {/* Background Ambient Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[350px] bg-accent/5 blur-[240px] rounded-full pointer-events-none" />
 
-      <div className="max-w-6xl mx-auto w-full px-6 relative z-10 mb-12">
+      <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 relative z-10 mb-8 sm:mb-12">
         <SectionHeader num="02" tag="Tech Stack" title="Tools & Technologies" />
       </div>
 
-      {/* Full-Width Runway with Fade Edge Masks */}
+      {/* MOBILE DEDICATED LAYOUT (< md): 100% RELIABLE & VISIBLE GRID */}
+      <div className="block md:hidden px-4 relative z-10 w-full">
+        <div className="grid grid-cols-2 gap-3">
+          {[...row1, ...row2].map((item) => (
+            <div
+              key={item.id}
+              className="p-3.5 rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-md flex items-center gap-3 shadow-sm"
+            >
+              <span className="text-2xl font-mono shrink-0">{item.symbol}</span>
+              <div className="flex flex-col text-left min-w-0">
+                <span className="font-mono text-xs font-semibold text-white truncate">
+                  {item.name}
+                </span>
+                <span className="font-mono text-[9px] text-amber-500 uppercase tracking-wider truncate">
+                  {item.category}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* DESKTOP LAYOUT (>= md): MARQUEE RUNWAY */}
       <motion.div
-        className="w-full relative z-10 [mask-image:linear-gradient(to_right,transparent_0%,black_15%,black_85%,transparent_100%)]"
+        className="hidden md:block w-full relative z-10 [mask-image:linear-gradient(to_right,transparent_0%,black_15%,black_85%,transparent_100%)]"
         style={{ WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)" }}
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: true, amount: 0 }}
         transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="flex flex-col gap-4">
-          {/* Row 1: Leftward Drift with 8x Extended Array Length */}
+          {/* Row 1: Leftward Drift */}
           <MarqueeRow items={row1} baseVelocity={-0.15} />
 
-          {/* Row 2: Rightward Drift with 8x Extended Array Length */}
+          {/* Row 2: Rightward Drift */}
           <MarqueeRow items={row2} baseVelocity={0.15} />
         </div>
       </motion.div>

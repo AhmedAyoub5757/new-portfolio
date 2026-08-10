@@ -129,7 +129,7 @@ export default function StackedImageGallery() {
       className="relative bg-background pb-4 md:pb-16 px-4 sm:px-8 select-none"
     >
       {/* Sticky Section Header */}
-      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md pt-6 pb-4">
+      <div className="relative sm:sticky sm:top-0 z-20 bg-background pt-4 sm:pt-6 pb-4 sm:bg-background/80 sm:backdrop-blur-md">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-white/10 pb-4">
           <div>
             <SectionHeader num="03" tag="Portfolio Showcase" title="Selected Works" />

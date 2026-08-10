@@ -97,7 +97,7 @@ export default function Navbar() {
   return (
     <>
       {/* ---------------- STATIC MOBILE TOP BAR (Logo + WhatsApp) ---------------- */}
-      <div className="md:hidden fixed top-0 left-0 w-full z-40 px-4 pt-4 pointer-events-none">
+      <header className="md:hidden fixed top-0 left-0 w-full z-40 px-4 pt-4 pointer-events-none">
         <div className="max-w-md mx-auto flex items-center justify-between pointer-events-auto bg-neutral-950/70 backdrop-blur-xl border border-white/10 px-5 py-2.5 rounded-full shadow-lg">
           {/* Logo */}
           <a href="#" onClick={handleLogoClick} className="flex items-center gap-1.5">
@@ -121,7 +121,7 @@ export default function Navbar() {
             <span>WhatsApp</span>
           </a>
         </div>
-      </div>
+      </header>
 
       {/* ---------------- DESKTOP NAVBAR ---------------- */}
       <header className="hidden md:block fixed top-0 left-0 w-full z-50 pt-4 px-6 transition-all duration-300">

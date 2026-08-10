@@ -61,29 +61,23 @@ export default function Banner() {
       ref={sectionRef}
       onMouseMove={handleSectionMouseMove}
       className="relative py-12 sm:py-24 md:py-32 px-4 sm:px-6 overflow-hidden select-none"
-      style={{
-        background: `
-          radial-gradient(ellipse 90% 70% at 50% -10%, rgba(255,122,0,0.15) 0%, transparent 65%),
-          radial-gradient(circle at 10% 90%, rgba(255,167,51,0.08) 0%, transparent 50%),
-          linear-gradient(180deg, #0B0B0C 0%, #0F0F12 50%, #0B0B0C 100%)
-        `,
-      }}
+      
     >
       {/* Dynamic Mouse Spotlight — desktop only */}
-      <div
+      {/* <div
         className="hidden md:block absolute inset-0 pointer-events-none transition-opacity duration-300"
         style={{
           background: `radial-gradient(650px circle at ${mousePos.x}% ${mousePos.y}%, rgba(255,122,0,0.12), transparent 70%)`,
         }}
-      />
+      /> */}
 
       {/* Futuristic Background Laser Beam Mesh */}
-      <div className="absolute top-0 left-1/4 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-[#FF7A00] to-transparent opacity-75 shadow-[0_0_15px_#FF7A00]" />
-      <div className="absolute bottom-0 right-1/4 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-[#FFA733] to-transparent opacity-50" />
+      {/* <div className="absolute top-0 left-1/4 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-[#FF7A00] to-transparent opacity-75 shadow-[0_0_15px_#FF7A00]" />
+      <div className="absolute bottom-0 right-1/4 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-[#FFA733] to-transparent opacity-50" /> */}
 
       {/* Floating Ambient Glowing Flares */}
-      <div className="absolute top-1/3 -left-20 w-72 h-72 sm:w-96 sm:h-96 bg-[#FF7A00]/12 rounded-full blur-[140px] pointer-events-none animate-[float_7s_ease-in-out_infinite]" />
-      <div className="absolute bottom-1/3 -right-20 w-72 h-72 sm:w-96 sm:h-96 bg-[#FFA733]/12 rounded-full blur-[140px] pointer-events-none animate-[float-slow_9s_ease-in-out_infinite]" />
+      {/* <div className="absolute top-1/3 -left-20 w-72 h-72 sm:w-96 sm:h-96 bg-[#FF7A00]/12 rounded-full blur-[140px] pointer-events-none animate-[float_7s_ease-in-out_infinite]" />
+      <div className="absolute bottom-1/3 -right-20 w-72 h-72 sm:w-96 sm:h-96 bg-[#FFA733]/12 rounded-full blur-[140px] pointer-events-none animate-[float-slow_9s_ease-in-out_infinite]" /> */}
 
       {/* ---------------- MOBILE VERSION: 100% RELIABLE, CLEAN & ALWAYS VISIBLE ---------------- */}
       <div className="block md:hidden relative max-w-md mx-auto rounded-2xl bg-[#141416] border border-white/10 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden">

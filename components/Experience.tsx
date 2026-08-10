@@ -177,9 +177,47 @@ export default function Experience() {
       <div className="relative max-w-6xl mx-auto">
         <SectionHeader num="04" tag="Career Journey" title="Professional Experience" />
 
-        {/* Board frame */}
+        {/* MOBILE DEDICATED LAYOUT (< sm): 100% RELIABLE TIMELINE CARDS */}
+        <div className="block sm:hidden space-y-3 relative z-10">
+          {flights.map((f) => (
+            <div
+              key={f.code}
+              className="p-4 rounded-xl border border-white/10 bg-[#0F0F11] shadow-lg flex flex-col gap-2.5"
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded border border-amber-500/20">
+                  {f.code}
+                </span>
+                <span
+                  className={`font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                    f.live
+                      ? "text-green-400 bg-green-400/10 border-green-400/30"
+                      : "text-neutral-400 bg-white/5 border-white/10"
+                  }`}
+                >
+                  {f.status}
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-base font-bold text-white tracking-wide">
+                  {f.role}
+                </h3>
+                <p className="text-xs font-mono text-amber-400/90 mt-0.5">
+                  {f.org}
+                </p>
+              </div>
+
+              <p className="text-xs text-neutral-300 leading-relaxed border-t border-white/10 pt-2.5">
+                {f.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* DESKTOP LAYOUT (>= sm): FLIGHT BOARD WITH FLAP CHAR ANIMATION */}
         <motion.div
-          className="rounded-2xl border border-white/10 bg-[#0F0F11] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.5)]"
+          className="hidden sm:block rounded-2xl border border-white/10 bg-[#0F0F11] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.5)]"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.1 }}
@@ -216,7 +254,7 @@ export default function Experience() {
                   key={f.code}
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
+                  viewport={{ once: true, amount: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <div

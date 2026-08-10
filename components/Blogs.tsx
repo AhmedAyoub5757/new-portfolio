@@ -190,7 +190,7 @@ export default function Blogs() {
           className="hidden md:block rounded-2xl border border-white/10 bg-[#0F0F11] p-6 sm:p-10 shadow-[0_25px_70px_rgba(0,0,0,0.5)]"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.1 }}
+          viewport={{ once: true, amount: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
           <div style={{ perspective: "1000px" }} className="w-full min-h-[360px] sm:min-h-[280px]">
