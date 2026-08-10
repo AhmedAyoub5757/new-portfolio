@@ -5,7 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef } fr
 import Lenis from "lenis";
 
 type LenisScrollApi = {
-  scrollToTarget: (target: string | HTMLElement, offset?: number) => void;
+  scrollToTarget: (target: string | HTMLElement | number, offset?: number) => void;
 };
 
 const LenisScrollContext = createContext<LenisScrollApi | null>(null);
@@ -17,11 +17,16 @@ export function useLenisScroll() {
 export default function LenisProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
 
-  const scrollToTarget = useCallback((target: string | HTMLElement, offset = -88) => {
+  const scrollToTarget = useCallback((target: string | HTMLElement | number, offset = -88) => {
+    if (target === 0 || target === "top") {
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(0, { offset: 0, duration: 1.0 });
+      }
+      return;
+    }
     lenisRef.current?.scrollTo(target, {
       offset,
       duration: 1.1,
-      lerp: 0.08,
     });
   }, []);
 

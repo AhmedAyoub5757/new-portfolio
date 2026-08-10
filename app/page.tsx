@@ -14,11 +14,11 @@ export default function Home() {
     <div className="grid grid-cols-1 gap-y-4 md:gap-y-8 lg:gap-y-12">
       <Hero />
       <About />
-      <HowIBuild />
       <Skills />
       <IndustryExperience />
-      <Blogs />
       <Experience />
+      <HowIBuild />
+      <Blogs />
       <Banner />
       <Contact />
       <Footer />

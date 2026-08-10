@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import SectionHeader from "./SectionHeader";
 
 interface Skill {
@@ -76,13 +77,17 @@ export default function SkillsMarquee() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[350px] bg-accent/5 blur-[240px] rounded-full pointer-events-none" />
 
       <div className="max-w-6xl mx-auto w-full px-6 relative z-10 mb-12">
-        <SectionHeader num="04" tag="Tech Stack" title="Tools & Technologies" />
+        <SectionHeader num="02" tag="Tech Stack" title="Tools & Technologies" />
       </div>
 
       {/* Full-Width Runway with Fade Edge Masks */}
-      <div
+      <motion.div
         className="w-full relative z-10 [mask-image:linear-gradient(to_right,transparent_0%,black_15%,black_85%,transparent_100%)]"
         style={{ WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)" }}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="flex flex-col gap-4">
           {/* Row 1: Leftward Drift with 8x Extended Array Length */}
@@ -91,7 +96,7 @@ export default function SkillsMarquee() {
           {/* Row 2: Rightward Drift with 8x Extended Array Length */}
           <MarqueeRow items={row2} baseVelocity={0.15} />
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SectionHeader from "./SectionHeader";
 import { ChevronLeft, ChevronRight, ExternalLink, BookOpen } from "lucide-react";
@@ -87,6 +87,7 @@ export default function Blogs() {
   const [activeTag, setActiveTag] = useState("All");
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
+  const mobileCarouselRef = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(
     () => (activeTag === "All" ? posts : posts.filter((p) => p.tag === activeTag)),
@@ -104,6 +105,9 @@ export default function Blogs() {
     setActiveTag(tag);
     setIndex(0);
     setDirection(1);
+    if (mobileCarouselRef.current) {
+      mobileCarouselRef.current.scrollLeft = 0;
+    }
   };
 
   return (
@@ -111,18 +115,19 @@ export default function Blogs() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[500px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto">
-        <SectionHeader num="07" tag="Written Work" title="The Card Catalog" />
+        <SectionHeader num="06" tag="Articles & Insights" title="Technical Writing & Articles" />
 
-        {/* Tag filter chips */}
-        <div className="flex flex-wrap gap-2 mb-8 md:mb-10">
+        {/* Tag filter chips (Desktop only) */}
+        <div className="hidden md:flex flex-wrap gap-2 mb-10">
           {tags.map((tag) => (
             <button
               key={tag}
+              type="button"
               onClick={() => selectTag(tag)}
-              className={`text-xs px-3.5 py-1.5 rounded-full border transition-colors duration-300 ${
+              className={`text-xs px-3.5 py-2 rounded-full border transition-all duration-200 cursor-pointer active:scale-95 touch-manipulation ${
                 activeTag === tag
-                  ? "bg-accent text-background border-accent"
-                  : "border-white/10 text-muted hover:border-accent/50 hover:text-text"
+                  ? "bg-accent text-background border-accent font-bold shadow-[0_0_15px_rgba(255,122,0,0.3)]"
+                  : "border-white/10 text-muted hover:border-accent/50 hover:text-text bg-white/[0.03]"
               }`}
             >
               {tag}
@@ -130,51 +135,64 @@ export default function Blogs() {
           ))}
         </div>
 
-        {/* MOBILE VIEW (< 768px) */}
-        <div className="flex flex-col gap-4 md:hidden">
-          {filtered.map((item) => (
-            <article
-              key={item.id}
-              className="rounded-xl border border-white/10 bg-card p-5 relative overflow-hidden"
-            >
-              <div className="flex items-center justify-between mb-3 pb-3 border-b border-dashed border-white/10">
-                <span className="text-[10px] font-mono text-accent tracking-widest">
-                  VOL. {String(posts.findIndex((p) => p.id === item.id) + 1).padStart(2, "0")}
-                </span>
-                <span className="text-[10px] font-mono text-muted">{item.date}</span>
-              </div>
+        {/* MOBILE VIEW (< 768px) CAROUSEL */}
+        <div className="md:hidden">
+          <div
+            ref={mobileCarouselRef}
+            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 -mx-4 px-4"
+          >
+            {filtered.map((item) => (
+              <article
+                key={item.id}
+                className="snap-center shrink-0 w-[86vw] sm:w-[340px] rounded-xl bg-card p-5 relative overflow-hidden flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3 pb-3 border-b border-dashed border-white/10">
+                    <span className="text-[10px] font-mono text-accent tracking-widest font-bold">
+                      ARTICLE {String(posts.findIndex((p) => p.id === item.id) + 1).padStart(2, "0")}
+                    </span>
+                    <span className="text-[10px] font-mono text-muted">{item.date}</span>
+                  </div>
 
-              <p className="text-[10px] text-muted tracking-widest mb-1.5 uppercase font-mono">
-                SUBJECT: {item.tag}
-              </p>
+                  <p className="text-[10px] text-muted tracking-widest mb-1.5 uppercase font-mono">
+                    TOPIC: {item.tag}
+                  </p>
 
-              <h3 className="text-base font-semibold text-text leading-snug mb-2">
-                {item.title}
-              </h3>
+                  <h3 className="text-base font-semibold text-text leading-snug mb-2">
+                    {item.title}
+                  </h3>
 
-              <p className="text-xs text-muted leading-relaxed mb-4">{item.blurb}</p>
+                  <p className="text-xs text-muted leading-relaxed mb-4">{item.blurb}</p>
+                </div>
 
-              <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/5">
-                <span className="flex items-center gap-1 text-[11px] text-muted">
-                  <BookOpen size={12} className="text-accent" />
-                  {item.readTime}
-                </span>
-                <a
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-accent hover:text-hover font-medium transition-colors"
-                >
-                  Read on Medium
-                  <ExternalLink size={12} />
-                </a>
-              </div>
-            </article>
-          ))}
+                <div className="flex items-center justify-between gap-2 pt-3 border-t border-white/10">
+                  <span className="flex items-center gap-1 text-[11px] text-muted">
+                    <BookOpen size={12} className="text-accent" />
+                    {item.readTime}
+                  </span>
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-accent hover:text-hover font-medium transition-colors"
+                  >
+                    Read on Medium
+                    <ExternalLink size={12} />
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
 
         {/* DESKTOP VIEW (>= 768px) */}
-        <div className="hidden md:block rounded-2xl border border-white/10 bg-[#0F0F11] p-6 sm:p-10 shadow-[0_25px_70px_rgba(0,0,0,0.5)]">
+        <motion.div
+          className="hidden md:block rounded-2xl border border-white/10 bg-[#0F0F11] p-6 sm:p-10 shadow-[0_25px_70px_rgba(0,0,0,0.5)]"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div style={{ perspective: "1000px" }} className="w-full min-h-[360px] sm:min-h-[280px]">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
@@ -194,13 +212,13 @@ export default function Blogs() {
                 {/* Card header row */}
                 <div className="flex items-center justify-between mb-5 pb-4 border-b border-dashed border-white/15">
                   <span className="text-[11px] font-mono text-accent tracking-widest">
-                    VOL. {String(posts.findIndex((p) => p.id === post?.id) + 1).padStart(2, "0")}
+                    ARTICLE {String(posts.findIndex((p) => p.id === post?.id) + 1).padStart(2, "0")}
                   </span>
                   <span className="text-[11px] font-mono text-muted">{post?.date}</span>
                 </div>
 
                 <p className="text-[11px] text-muted tracking-widest mb-2">
-                  SUBJECT: {post?.tag?.toUpperCase()}
+                  TOPIC: {post?.tag?.toUpperCase()}
                 </p>
                 <h3 className="text-xl sm:text-2xl font-semibold text-text leading-snug mb-4">
                   {post?.title}
@@ -230,7 +248,7 @@ export default function Blogs() {
           <div className="flex items-center justify-between mt-6">
             <button
               onClick={() => go(-1)}
-              className="w-9 h-9 rounded-full border border-white/10 hover:border-accent flex items-center justify-center text-muted hover:text-accent transition-colors duration-300"
+              className="w-9 h-9 rounded-full border border-white/10 hover:border-accent flex items-center justify-center text-muted hover:text-accent transition-colors duration-300 cursor-pointer"
               aria-label="Previous"
             >
               <ChevronLeft size={16} />
@@ -242,13 +260,13 @@ export default function Blogs() {
 
             <button
               onClick={() => go(1)}
-              className="w-9 h-9 rounded-full border border-white/10 hover:border-accent flex items-center justify-center text-muted hover:text-accent transition-colors duration-300"
+              className="w-9 h-9 rounded-full border border-white/10 hover:border-accent flex items-center justify-center text-muted hover:text-accent transition-colors duration-300 cursor-pointer"
               aria-label="Next"
             >
               <ChevronRight size={16} />
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

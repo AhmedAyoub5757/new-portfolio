@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import SectionHeader from "./SectionHeader";
 
 interface ProjectImage {
   id: string;
@@ -71,11 +72,8 @@ function ImageCard({
   const startRange = index / total;
   const endRange = (index + 1) / total;
 
-  // Progressive scaling down for stacked cards underneath
   const targetScale = 1 - (total - index) * 0.035;
   const scale = useTransform(progress, [startRange, 1], [1, targetScale]);
-
-  // Smooth brightness dimming for lower cards as new cards stack on top
   const brightness = useTransform(progress, [endRange, 1], [1, 0.4]);
 
   return (
@@ -97,7 +95,6 @@ function ImageCard({
           className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
         />
 
-        {/* Floating Hover Pill */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -116,10 +113,10 @@ function ImageCard({
     </div>
   );
 }
-import SectionHeader from "./SectionHeader";
 
 export default function StackedImageGallery() {
   const containerRef = useRef<HTMLDivElement>(null);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
@@ -135,16 +132,47 @@ export default function StackedImageGallery() {
       <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md pt-6 pb-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-white/10 pb-4">
           <div>
-            <SectionHeader num="05" tag="Portfolio Showcase" title="Selected Works" />
+            <SectionHeader num="03" tag="Portfolio Showcase" title="Selected Works" />
           </div>
-          {/* <span className="font-mono text-xs text-muted tracking-wider">
-            [ SCROLL TO STACK ]
-          </span> */}
         </div>
       </div>
 
-      {/* Stacked Cards Track */}
-      <div className="relative 2xl:-mt-88">
+      {/* MOBILE LAYOUT CAROUSEL (< sm) */}
+      <div className="block sm:hidden pt-4 pb-8">
+        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 -mx-4 px-4">
+          {projects.map((project, idx) => (
+            <div
+              key={project.id}
+              onClick={() => window.open(project.url, "_blank", "noopener,noreferrer")}
+              className="snap-center shrink-0 w-[88vw] rounded-2xl bg-neutral-950 overflow-hidden shadow-2xl relative group cursor-pointer"
+            >
+              <div className="h-[260px] relative">
+                <img
+                  src={project.imageSrc}
+                  alt={project.name}
+                  className="w-full h-full object-cover object-top"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+              </div>
+
+              <div className="p-4 flex items-center justify-between bg-card border-t border-white/10">
+                <div>
+                  <span className="text-[10px] font-mono text-accent uppercase tracking-wider block mb-0.5">
+                    PROJECT 0{idx + 1}
+                  </span>
+                  <h3 className="text-base font-bold text-white">{project.name}</h3>
+                </div>
+                <span className="text-xs font-mono text-accent bg-accent/10 border border-accent/20 px-3 py-1.5 rounded-full flex items-center gap-1">
+                  Visit ↗
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* DESKTOP STACKED TRACK (>= sm) */}
+      <div className="hidden sm:block relative 2xl:-mt-88">
         {projects.map((project, idx) => (
           <ImageCard
             key={project.id}

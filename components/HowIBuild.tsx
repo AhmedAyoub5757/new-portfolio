@@ -85,30 +85,31 @@ export default function HowIBuildFilmstrip() {
 
   return (
     <section className="relative bg-background">
-      {/* MOBILE LAYOUT (< md) */}
+      {/* MOBILE LAYOUT (< md) CAROUSEL */}
       <div className="block md:hidden py-12 px-4 sm:px-6">
-        <div className="mb-8">
-          <SectionHeader num="03" tag="Engineering Process" title="How I Build" />
+        <div className="mb-6">
+          <SectionHeader num="05" tag="Engineering Process" title="How I Build" />
         </div>
-        <div className="flex flex-col gap-6">
+
+        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 -mx-4 px-4">
           {slides.map((slide) => (
-            <div key={slide.id} className="w-full">
-              <div className="relative rounded-2xl bg-white/[0.02] border border-white/10 p-6 backdrop-blur-xl overflow-hidden min-h-[360px] flex flex-col justify-between">
+            <div key={slide.id} className="snap-center shrink-0 w-[86vw] sm:w-[360px]">
+              <div className="relative rounded-2xl bg-white/[0.03] p-6 backdrop-blur-xl overflow-hidden min-h-[360px] flex flex-col justify-between">
                 <div
                   className={`absolute -bottom-24 -right-24 w-72 h-72 bg-gradient-to-tl ${slide.accent} blur-3xl rounded-full pointer-events-none`}
                 />
 
                 <div>
                   <div className="flex items-center justify-between mb-6">
-                    <span className="font-mono text-[10px] text-accent tracking-widest uppercase">
+                    <span className="font-mono text-[10px] text-accent tracking-widest uppercase font-bold">
                       {slide.tag}
                     </span>
-                    <span className="font-mono text-2xl font-light text-white/20">
+                    <span className="font-mono text-2xl font-light text-white/30">
                       {slide.number}
                     </span>
                   </div>
 
-                  <h3 className="text-2xl font-medium text-text leading-[1.2] tracking-tight mb-4">
+                  <h3 className="text-xl sm:text-2xl font-medium text-text leading-[1.2] tracking-tight mb-4">
                     {slide.headline}
                   </h3>
 
@@ -120,11 +121,11 @@ export default function HowIBuildFilmstrip() {
                 <div className="pt-6 border-t border-white/10 flex items-center justify-between mt-6">
                   <div className="flex items-center gap-2 font-mono text-[10px] text-muted">
                     <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                    <span>STAGE_{slide.number}_VERIFIED</span>
+                    <span>PHASE {slide.number}</span>
                   </div>
 
                   <span className="text-[10px] font-mono text-muted">
-                    SLIDE {slide.number} / 04 →
+                    STEP {slide.number} / 04 →
                   </span>
                 </div>
               </div>
@@ -139,10 +140,7 @@ export default function HowIBuildFilmstrip() {
           <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 blur-[200px] rounded-full pointer-events-none" />
 
           <div className="max-w-7xl mx-auto w-full px-6 relative z-10 flex flex-col gap-6">
-            <SectionHeader num="03" tag="Engineering Process" title="How I Build" />
-            <span className="text-xs font-mono text-muted">
-              {/* [ SCROLL VERTICALLY TO EXPLORE ]  */}
-            </span>
+            <SectionHeader num="05" tag="Engineering Process" title="How I Build" />
           </div>
 
           <div className="relative w-full z-10 flex-1 flex items-center min-h-0 my-auto">
@@ -183,11 +181,11 @@ export default function HowIBuildFilmstrip() {
                     <div className="pt-8 border-t border-white/10 flex items-center justify-between">
                       <div className="flex items-center gap-2 font-mono text-xs text-muted">
                         <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                        <span>STAGE_{slide.number}_VERIFIED</span>
+                        <span>PHASE {slide.number}</span>
                       </div>
 
                       <span className="text-xs font-mono text-muted group-hover:text-accent group-hover:translate-x-1 transition-all">
-                        SLIDE {slide.number} / 04 →
+                        STEP {slide.number} / 04 →
                       </span>
                     </div>
                   </div>

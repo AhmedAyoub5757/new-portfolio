@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { ArrowUp, Sparkles, Heart, Copy, Check } from "lucide-react";
+import { useRef, useState, useCallback } from "react";
+import { ArrowUp, Copy, Check } from "lucide-react";
+import { useLenisScroll } from "./LenisProvider";
 
 const quickLinks = [
   { label: "About", href: "#about", desc: "Background & Bio" },
@@ -45,6 +46,7 @@ export default function Footer() {
   const bigTextRef = useRef<HTMLDivElement>(null);
   const [spot, setSpot] = useState({ x: 50, y: -20 });
   const [copied, setCopied] = useState(false);
+  const lenisScroll = useLenisScroll();
 
   const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = bigTextRef.current?.getBoundingClientRect();
@@ -55,7 +57,39 @@ export default function Footer() {
     });
   };
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleLinkClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      if (!href.startsWith("#")) return;
+      e.preventDefault();
+      const targetId = href.slice(1);
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        if (lenisScroll) {
+          lenisScroll.scrollToTarget(targetElement);
+        } else {
+          targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    },
+    [lenisScroll]
+  );
+
+  const scrollToTop = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (lenisScroll) {
+      lenisScroll.scrollToTarget(0, 0);
+    }
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    } catch {
+      window.scrollTo(0, 0);
+    }
+  };
 
   const copyEmail = () => {
     navigator.clipboard.writeText("ahmed42.dev@gmail.com");
@@ -64,7 +98,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-[#0B0B0C] text-[#FFFFFF] overflow-hidden border-t border-white/[0.08] pt-24 pb-12 font-sans select-none">
+    <footer className="relative bg-[#0B0B0C] text-[#FFFFFF] overflow-hidden border-t border-white/[0.08] pt-20 pb-28 sm:pb-16 font-sans">
       {/* --- AMBIENT GLOW & GRID BACKGROUND --- */}
       {/* 1. Large Corner Ambient Glowing Orbs */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#FF7A00]/10 rounded-full blur-[120px] pointer-events-none" />
@@ -87,7 +121,7 @@ export default function Footer() {
       {/* 3. Subtle Animated Accent Beam */}
       <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#FF7A00] to-transparent opacity-40" />
 
-      <div className="relative max-w-6xl mx-auto px-6">
+      <div className="relative z-10 max-w-6xl mx-auto px-6">
         {/* HERO HEADING */}
         <div
           ref={bigTextRef}
@@ -158,14 +192,15 @@ export default function Footer() {
             <p className="text-xs text-[#A3A3A3] uppercase tracking-widest font-mono">
               Navigation
             </p>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="group flex items-baseline justify-between text-sm text-[#A3A3A3] hover:text-[#FFA733] transition-colors duration-200"
+                    onClick={(e) => handleLinkClick(e, link.href)}
+                    className="group flex items-center justify-between py-2 text-sm text-[#A3A3A3] hover:text-[#FFA733] transition-colors duration-200 cursor-pointer min-h-[44px]"
                   >
-                    <span className="group-hover:translate-x-1 transition-transform duration-200">
+                    <span className="group-hover:translate-x-1 transition-transform duration-200 font-medium">
                       {link.label}
                     </span>
                     <span className="text-[10px] text-[#A3A3A3]/50 group-hover:text-[#FF7A00] transition-colors font-mono">
@@ -185,7 +220,7 @@ export default function Footer() {
 
             <button
               onClick={copyEmail}
-              className="w-full text-left p-4 rounded-2xl border border-white/10 bg-[#161618] hover:border-[#FF7A00]/50 transition-all duration-300 group relative overflow-hidden"
+              className="w-full text-left p-4 rounded-2xl border border-white/10 bg-[#161618] hover:border-[#FF7A00]/50 transition-all duration-300 group relative overflow-hidden active:scale-[0.98] cursor-pointer"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -214,7 +249,7 @@ export default function Footer() {
               <p className="text-[10px] text-[#A3A3A3]/70 mb-3 font-mono tracking-wider">
                 LOCATION: KARACHI, PK (UTC+5)
               </p>
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-3">
                 {socials.map((s) => (
                   <a
                     key={s.label}
@@ -222,7 +257,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={s.label}
-                    className="w-10 h-10 rounded-xl border border-white/10 bg-[#161618] flex items-center justify-center text-[#A3A3A3] hover:text-[#FFFFFF] hover:border-[#FF7A00] hover:bg-[#FF7A00]/10 transition-all duration-300"
+                    className="w-11 h-11 rounded-xl border border-white/10 bg-[#161618] flex items-center justify-center text-[#A3A3A3] hover:text-[#FFFFFF] hover:border-[#FF7A00] hover:bg-[#FF7A00]/10 transition-all duration-300 active:scale-95 cursor-pointer"
                   >
                     {s.icon}
                   </a>
@@ -232,9 +267,20 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Glowing Separator Line */}
-        <div className="relative h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8">
-          <div className="absolute left-1/2 -translate-x-1/2 -top-px w-24 h-[2px] bg-[#FF7A00] blur-[2px]" />
+        {/* Sleek Multi-Layered Separator Divider */}
+        <div className="relative my-12 py-4 flex items-center justify-center">
+          {/* Background glowing line */}
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-gradient-to-r from-transparent via-[#FF7A00]/40 to-transparent" />
+          <div className="absolute inset-x-12 top-1/2 -translate-y-1/2 h-[2px] bg-gradient-to-r from-transparent via-[#FFA733]/60 to-transparent blur-[3px]" />
+
+          {/* Central Emblem Crest */}
+          <div className="relative z-10 flex items-center gap-3 px-6 py-1.5 rounded-full bg-[#111113] border border-white/10 shadow-[0_0_20px_rgba(255,122,0,0.2)]">
+            <span className="w-2 h-2 rounded-full bg-[#FF7A00] animate-pulse" />
+            <span className="text-[10px] font-mono text-[#A3A3A3] tracking-widest uppercase">
+              KARACHI, PK (UTC+5) // OPEN FOR GLOBAL ROLES
+            </span>
+            <span className="w-2 h-2 rounded-full bg-[#FF7A00] animate-pulse" />
+          </div>
         </div>
 
         {/* Bottom Bar */}
@@ -243,17 +289,9 @@ export default function Footer() {
             © {new Date().getFullYear()} AHMED AYOUB. ALL RIGHTS RESERVED.
           </p>
 
-          {/* <div className="order-3 md:order-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-[#161618] text-xs text-[#A3A3A3]">
-            <span>Designed & Engineered with</span>
-            <Heart size={11} className="text-red-500 fill-red-500 inline animate-pulse" />
-            <span>in Karachi</span>
-            <span className="w-1 h-1 rounded-full bg-[#FF7A00] ml-1" />
-            <Sparkles size={11} className="text-[#FF7A00]" />
-          </div> */}
-
           <button
             onClick={scrollToTop}
-            className="order-1 md:order-3 group relative inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-[#161618] hover:border-[#FF7A00]/50 hover:bg-[#FF7A00]/10 text-xs text-[#A3A3A3] hover:text-[#FFFFFF] transition-all duration-300"
+            className="order-1 md:order-3 group relative inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/10 bg-[#161618] hover:border-[#FF7A00]/50 hover:bg-[#FF7A00]/10 text-xs text-[#A3A3A3] hover:text-[#FFFFFF] transition-all duration-300 cursor-pointer active:scale-95"
           >
             <span>Back to top</span>
             <div className="w-5 h-5 rounded-full bg-white/5 group-hover:bg-[#FF7A00] group-hover:text-[#0B0B0C] flex items-center justify-center transition-all duration-300">

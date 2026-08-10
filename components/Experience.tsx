@@ -162,6 +162,10 @@ export default function Experience() {
     return () => clearInterval(id);
   }, []);
 
+  const toggleRow = (i: number) => {
+    setOpenIndex((prev) => (prev === i ? null : i));
+  };
+
   return (
     <section
       id="experience"
@@ -171,16 +175,22 @@ export default function Experience() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[500px] bg-amber-500/5 blur-[150px] rounded-full pointer-events-none" />
 
       <div className="relative max-w-6xl mx-auto">
-        <SectionHeader num="06" tag="Experience" title="Career Departures" />
+        <SectionHeader num="04" tag="Career Journey" title="Professional Experience" />
 
         {/* Board frame */}
-        <div className="rounded-2xl border border-white/10 bg-[#0F0F11] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.5)]">
+        <motion.div
+          className="rounded-2xl border border-white/10 bg-[#0F0F11] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.5)]"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
           {/* Board header bar */}
           <div className="flex items-center justify-between px-4 sm:px-6 py-3 bg-black/40 border-b border-white/10">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-[pulse-dot_2s_infinite]" />
               <span className="text-[10px] sm:text-[11px] text-neutral-400 font-mono tracking-widest">
-                DEPARTURES — CAREER TIMELINE
+                CAREER TIMELINE & MILESTONES
               </span>
             </div>
             <span className="text-[11px] text-amber-500 font-mono tabular-nums">
@@ -202,12 +212,26 @@ export default function Experience() {
             {flights.map((f, i) => {
               const isOpen = openIndex === i;
               return (
-                <div key={f.code}>
-                  <button
-                    onClick={() => setOpenIndex(isOpen ? null : i)}
-                    className="w-full text-left px-4 sm:px-6 py-4 sm:py-5 hover:bg-white/[0.02] transition-colors duration-300"
+                <motion.div
+                  key={f.code}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => toggleRow(i)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        toggleRow(i);
+                      }
+                    }}
+                    className="w-full text-left px-4 sm:px-6 py-4 sm:py-5 hover:bg-white/[0.02] transition-colors duration-300 cursor-pointer select-none"
                   >
-                    <div className="flex flex-col sm:grid sm:grid-cols-[100px_1fr_1fr_140px_28px] gap-2 sm:gap-4 items-start sm:items-center relative pr-6 sm:pr-0">
+                    <div className="flex flex-col sm:grid sm:grid-cols-[100px_1fr_1fr_140px_28px] gap-2 sm:gap-4 items-start sm:items-center relative pr-8 sm:pr-0">
                       
                       {/* Mobile Code & Status Top Bar */}
                       <div className="flex items-center justify-between w-full sm:w-auto">
@@ -252,12 +276,12 @@ export default function Experience() {
                       {/* Dropdown Chevron */}
                       <motion.div
                         animate={{ rotate: isOpen ? 180 : 0 }}
-                        className="absolute right-0 top-1 sm:relative sm:top-0 sm:justify-self-end text-neutral-400"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 sm:relative sm:top-auto sm:translate-y-0 sm:justify-self-end text-neutral-400 pointer-events-none"
                       >
                         <ChevronDown size={16} />
                       </motion.div>
                     </div>
-                  </button>
+                  </div>
 
                   <AnimatePresence>
                     {isOpen && (
@@ -274,7 +298,7 @@ export default function Experience() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -282,13 +306,13 @@ export default function Experience() {
           {/* Footer strip */}
           <div className="px-4 sm:px-6 py-3 bg-black/40 border-t border-white/10 flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono tracking-widest">
-              {flights.length} ENTRIES LOGGED
+              {flights.length} CAREER MILESTONES
             </span>
             <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono tracking-widest">
               TAP A ROW FOR DETAILS
             </span>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

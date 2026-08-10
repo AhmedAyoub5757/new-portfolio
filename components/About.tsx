@@ -97,14 +97,15 @@ export default function ServicesScrollPinned() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Tracks vertical scroll inside the desktop container height (300vh)
+  // Tracks vertical scroll inside desktop container (300vh)
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
 
-  // Map scroll progress to active index for desktop view
+  // Map scroll progress to active index ONLY for desktop view
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
     const step = 1 / services.length;
     const index = Math.min(
       Math.floor(latest / step),
@@ -115,50 +116,40 @@ export default function ServicesScrollPinned() {
 
   const activeService = services[activeIndex];
 
-  // Section progress rail height animation
+  // Section progress rail height animation for desktop
   const activeRailHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
     <section id="about" className="relative bg-background">
       {/* MOBILE LAYOUT (< lg) */}
       <div className="block lg:hidden py-12 px-4 md:px-6">
-        <div className="mb-8">
-          <SectionHeader num="02" tag="Capabilities" title="What I Build" />
+        <div className="mb-6">
+          <SectionHeader num="01" tag="Capabilities" title="What I Build" />
         </div>
 
-        <div className="flex flex-col gap-6">
-          {services.map((service, index) => {
-            const isActive = index === activeIndex;
-
-            return (
-              <div
-                key={service.id}
-                onClick={() => setActiveIndex(index)}
-                className={`p-6 rounded-2xl transition-all duration-300 relative border ${
-                  isActive
-                    ? "bg-white/[0.04] border-accent/40 shadow-xl"
-                    : "bg-white/[0.02] border-white/10"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span
-                    className={`font-mono text-xs ${
-                      isActive ? "text-accent" : "text-muted"
-                    }`}
-                  >
-                    {service.number} // CAPABILITY
+        {/* Carousel Runway */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 -mx-4 px-4">
+          {services.map((service) => (
+            <div
+              key={service.id}
+              className="snap-center shrink-0 w-[86vw] sm:w-[380px] p-6 rounded-2xl bg-white/[0.03] relative flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-mono text-xs text-accent font-bold">
+                    SERVICE {service.number}
                   </span>
                   <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent">
-                    {isActive ? "[ ACTIVE ]" : "System Ready"}
+                    Swipe →
                   </span>
                 </div>
 
-                <h3 className="text-xl font-medium text-text mb-1">
+                <h3 className="text-xl font-bold text-text mb-1">
                   {service.title}
                 </h3>
                 <p className="text-xs text-muted mb-4">{service.subtitle}</p>
 
-                <p className="text-xs sm:text-sm text-text/80 leading-relaxed mb-4">
+                <p className="text-xs text-text/80 leading-relaxed mb-4">
                   {service.description}
                 </p>
 
@@ -193,17 +184,17 @@ export default function ServicesScrollPinned() {
                     ))}
                   </div>
                 </div>
-
-                {/* Target Metric */}
-                <div className="pt-3 border-t border-white/10 flex items-center justify-between">
-                  <span className="text-[10px] font-mono text-muted">Impact:</span>
-                  <span className="text-[10px] font-medium text-accent">
-                    {service.impact}
-                  </span>
-                </div>
               </div>
-            );
-          })}
+
+              {/* Target Metric */}
+              <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+                <span className="text-[10px] font-mono text-muted">Impact:</span>
+                <span className="text-[10px] font-bold text-accent">
+                  {service.impact}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -211,11 +202,11 @@ export default function ServicesScrollPinned() {
       <div ref={containerRef} className="hidden lg:block relative h-[300vh]">
         <div className="sticky top-0 h-screen 2xl:h-[60vh] flex flex-col justify-center px-6 overflow-hidden">
           {/* Ambient Glow */}
-          <div className="absolute top-1/2 right-10 -translate-y-1/2 w-[550px] h-[550px]  bg-accent/5 blur-[170px] rounded-full pointer-events-none" />
+          <div className="absolute top-1/2 right-10 -translate-y-1/2 w-[550px] h-[550px] bg-accent/5 blur-[170px] rounded-full pointer-events-none" />
 
           <div className="max-w-6xl mx-auto w-full relative z-10">
             {/* Section Header */}
-            <SectionHeader num="02" tag="Capabilities" title="What I Build" />
+            <SectionHeader num="01" tag="Capabilities" title="What I Build" />
 
             <div className="grid grid-cols-12 gap-12 items-center">
               {/* Left Side: Services List with vertical progress rail */}
@@ -248,11 +239,11 @@ export default function ServicesScrollPinned() {
                               isActive ? "text-accent" : "text-muted"
                             }`}
                           >
-                            {service.number} // CAPABILITY
+                            SERVICE {service.number}
                           </span>
                           {isActive && (
                             <span className="text-xs font-mono text-accent">
-                              [ ACTIVE ]
+                              Selected
                             </span>
                           )}
                         </div>
@@ -290,10 +281,10 @@ export default function ServicesScrollPinned() {
 
                       <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
                         <span className="font-mono text-xs text-accent uppercase tracking-widest">
-                          SPEC SPECIFICATION // {activeService.number}
+                          Overview // {activeService.number}
                         </span>
                         <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent">
-                          System Active
+                          Active Service
                         </span>
                       </div>
 
